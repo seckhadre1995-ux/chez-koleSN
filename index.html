@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Chez Kolé – Commander en ligne</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Nunito:wght@400;600;700;800&family=Dancing+Script:wght@700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --gold:#D4A017;
+  --gold-light:#F5C842;
+  --dark:#1A0A00;
+  --warm:#2C1200;
+  --warm2:#3B1A00;
+  --cream:#FFF8EE;
+  --cream2:#FFF0D6;
+  --red:#C0392B;
+  --orange:#E07B39;
+  --green:#27AE60;
+  --whatsapp:#25D366;
+  --shadow: 0 8px 32px rgba(0,0,0,.18);
+}
+
+html{scroll-behavior:smooth}
+
+body{
+  font-family:'Nunito',sans-serif;
+  background:var(--cream);
+  color:var(--dark);
+  min-height:100vh;
+}
+
+/* ── NAVBAR ── */
+nav{
+  position:sticky;top:0;z-index:100;
+  background:var(--dark);
+  border-bottom:3px solid var(--gold);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;height:64px;
+  box-shadow:0 4px 20px rgba(0,0,0,.5);
+}
+
+.nav-logo{
+  display:flex;align-items:center;gap:12px;
+  text-decoration:none;
+}
+.nav-logo svg{width:40px;height:40px}
+.nav-logo-text{
+  font-family:'Playfair Display',serif;
+  font-size:22px;font-weight:900;
+  color:var(--gold-light);
+  line-height:1;
+}
+.nav-logo-text small{
+  display:block;font-size:11px;
+  font-family:'Nunito',sans-serif;
+  color:rgba(255,255,255,.5);
+  font-weight:600;letter-spacing:2px;
+  text-transform:uppercase;margin-top:1px;
+}
+
+.nav-actions{display:flex;align-items:center;gap:12px}
+
+.cart-btn{
+  background:var(--gold);color:var(--dark);
+  border:none;border-radius:50px;
+  padding:8px 18px;font-weight:800;font-size:14px;
+  cursor:pointer;display:flex;align-items:center;gap:8px;
+  transition:all .2s;font-family:'Nunito',sans-serif;
+  position:relative;
+}
+.cart-btn:hover{background:var(--gold-light);transform:scale(1.05)}
+.cart-count{
+  background:var(--red);color:#fff;
+  border-radius:50%;width:20px;height:20px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:800;
+  transition:transform .2s;
+}
+.cart-count.bump{transform:scale(1.4)}
+
+/* ── HERO ── */
+.hero{
+  background:var(--warm);
+  padding:60px 24px 50px;
+  text-align:center;
+  position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 0%,rgba(212,160,23,.2) 0%,transparent 65%);
+  pointer-events:none;
+}
+.hero-stripe{
+  height:7px;
+  background:repeating-linear-gradient(90deg,
+    var(--gold) 0,var(--gold) 14px,
+    var(--red) 14px,var(--red) 28px,
+    var(--orange) 28px,var(--orange) 42px,
+    var(--gold) 42px,var(--gold) 56px);
+  margin-bottom:36px;
+}
+.hero-logo{
+  width:100px;height:100px;
+  margin:0 auto 20px;
+  filter:drop-shadow(0 6px 16px rgba(0,0,0,.5));
+  animation:heroIn .8s ease both;
+}
+@keyframes heroIn{from{opacity:0;transform:scale(.8) translateY(-10px)}to{opacity:1;transform:none}}
+
+.hero h1{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(38px,8vw,62px);font-weight:900;
+  color:var(--gold-light);
+  line-height:1.05;
+  animation:slideUp .7s .1s ease both;
+}
+.hero h1 em{color:#fff;font-style:normal}
+.hero p{
+  font-family:'Dancing Script',cursive;
+  font-size:20px;color:rgba(255,255,255,.7);
+  margin-top:10px;
+  animation:slideUp .7s .2s ease both;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(212,160,23,.3);
+  border-radius:50px;padding:8px 20px;
+  color:rgba(255,255,255,.7);font-size:13px;font-weight:600;
+  margin-top:18px;
+  animation:slideUp .7s .3s ease both;
+}
+.hero-badge span{color:var(--gold)}
+
+@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+/* ── LAYOUT ── */
+.main-layout{
+  max-width:1100px;margin:0 auto;
+  padding:36px 20px 60px;
+  display:grid;
+  grid-template-columns:1fr 340px;
+  gap:32px;
+  align-items:start;
+}
+@media(max-width:800px){.main-layout{grid-template-columns:1fr}}
+
+/* ── MENU ── */
+.menu-col{}
+
+.cat-header{
+  display:flex;align-items:center;gap:14px;
+  margin:28px 0 16px;
+}
+.cat-header h2{
+  font-family:'Playfair Display',serif;
+  font-size:20px;color:var(--warm);
+  white-space:nowrap;
+}
+.cat-line{flex:1;height:1.5px;background:linear-gradient(90deg,var(--gold),transparent)}
+
+.items-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:14px;
+}
+
+.item-card{
+  background:#fff;
+  border-radius:14px;
+  border:1.5px solid rgba(212,160,23,.2);
+  padding:16px 14px 14px;
+  display:flex;flex-direction:column;gap:8px;
+  box-shadow:0 2px 12px rgba(0,0,0,.06);
+  transition:all .25s;
+  animation:cardIn .5s ease both;
+  cursor:default;
+}
+.item-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 8px 24px rgba(0,0,0,.12);
+  border-color:var(--gold);
+}
+
+@keyframes cardIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+.item-emoji{font-size:32px;line-height:1}
+.item-name{
+  font-weight:800;font-size:14px;
+  color:var(--dark);line-height:1.3;
+}
+.item-note{font-size:11.5px;color:#888;font-style:italic}
+.item-bottom{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:auto;
+}
+.item-price{
+  font-family:'Playfair Display',serif;
+  font-size:15px;font-weight:700;
+  color:var(--red);
+}
+.add-btn{
+  background:var(--warm);color:var(--gold-light);
+  border:none;border-radius:8px;
+  width:32px;height:32px;font-size:20px;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s;font-weight:700;
+  line-height:1;
+}
+.add-btn:hover{background:var(--gold);color:var(--dark);transform:scale(1.15)}
+.add-btn:active{transform:scale(.95)}
+
+/* ── CART ── */
+.cart-col{position:sticky;top:80px}
+
+.cart-box{
+  background:#fff;
+  border-radius:18px;
+  border:2px solid rgba(212,160,23,.25);
+  overflow:hidden;
+  box-shadow:var(--shadow);
+}
+
+.cart-head{
+  background:var(--warm);
+  padding:16px 20px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.cart-head h3{
+  font-family:'Playfair Display',serif;
+  color:var(--gold-light);font-size:18px;
+}
+.cart-clear{
+  background:transparent;border:1px solid rgba(255,255,255,.2);
+  color:rgba(255,255,255,.5);
+  border-radius:6px;padding:4px 10px;font-size:12px;
+  cursor:pointer;transition:.2s;font-family:'Nunito',sans-serif;
+}
+.cart-clear:hover{border-color:var(--red);color:var(--red)}
+
+.cart-empty{
+  padding:32px 20px;text-align:center;
+  color:#bbb;font-size:14px;
+}
+.cart-empty-icon{font-size:40px;margin-bottom:8px}
+
+.cart-items{max-height:320px;overflow-y:auto;padding:12px 16px}
+.cart-items::-webkit-scrollbar{width:4px}
+.cart-items::-webkit-scrollbar-thumb{background:var(--gold);border-radius:4px}
+
+.cart-line{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 0;border-bottom:1px dashed rgba(212,160,23,.2);
+  animation:slideIn .2s ease;
+}
+@keyframes slideIn{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:none}}
+
+.cart-line:last-child{border-bottom:none}
+.cart-line-emoji{font-size:20px;flex-shrink:0}
+.cart-line-name{flex:1;font-size:13px;font-weight:700;color:var(--dark)}
+.cart-line-note{font-size:11px;color:#aaa;font-style:italic}
+.cart-line-controls{display:flex;align-items:center;gap:6px}
+.qty-btn{
+  background:var(--cream2);border:1px solid rgba(212,160,23,.3);
+  border-radius:6px;width:24px;height:24px;
+  cursor:pointer;font-size:15px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--dark);transition:.15s;
+}
+.qty-btn:hover{background:var(--gold);color:var(--dark)}
+.qty-num{font-weight:800;font-size:13px;min-width:16px;text-align:center}
+.cart-line-price{
+  font-family:'Playfair Display',serif;
+  font-size:13px;font-weight:700;color:var(--red);
+  min-width:60px;text-align:right;
+}
+
+.cart-footer{
+  background:var(--cream2);
+  padding:14px 20px;
+  border-top:1.5px solid rgba(212,160,23,.2);
+}
+.cart-total-row{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:14px;
+}
+.cart-total-label{font-weight:700;font-size:14px}
+.cart-total-amount{
+  font-family:'Playfair Display',serif;
+  font-size:20px;font-weight:900;color:var(--red);
+}
+
+.order-btn{
+  width:100%;
+  background:linear-gradient(135deg,var(--gold),var(--orange));
+  color:var(--dark);border:none;border-radius:12px;
+  padding:14px;font-weight:900;font-size:15px;
+  cursor:pointer;transition:all .2s;
+  font-family:'Nunito',sans-serif;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  box-shadow:0 4px 16px rgba(212,160,23,.35);
+}
+.order-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(212,160,23,.45)}
+.order-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* ── ORDER MODAL ── */
+.modal-overlay{
+  display:none;
+  position:fixed;inset:0;z-index:200;
+  background:rgba(0,0,0,.65);
+  backdrop-filter:blur(4px);
+  align-items:center;justify-content:center;
+  padding:20px;
+}
+.modal-overlay.open{display:flex}
+
+.modal{
+  background:#fff;border-radius:20px;
+  max-width:480px;width:100%;
+  overflow:hidden;
+  box-shadow:0 30px 80px rgba(0,0,0,.4);
+  animation:modalIn .3s ease;
+  max-height:90vh;
+  overflow-y:auto;
+}
+@keyframes modalIn{from{opacity:0;transform:scale(.9) translateY(20px)}to{opacity:1;transform:none}}
+
+.modal-head{
+  background:var(--warm);
+  padding:20px 24px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:10;
+}
+.modal-head h3{
+  font-family:'Playfair Display',serif;
+  color:var(--gold-light);font-size:20px;
+}
+.modal-close{
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
+  color:rgba(255,255,255,.8);font-size:20px;
+  cursor:pointer;line-height:1;transition:.2s;
+  width:36px;height:36px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+}
+.modal-close:hover{background:var(--red);color:#fff;border-color:var(--red)}
+
+.modal-body{padding:24px}
+
+.form-group{margin-bottom:16px}
+label{
+  display:block;font-weight:700;font-size:13px;
+  color:var(--warm);margin-bottom:6px;letter-spacing:.5px;
+  text-transform:uppercase;
+}
+input,textarea,select{
+  width:100%;border:2px solid #e8ddc8;border-radius:10px;
+  padding:10px 14px;font-size:14px;font-family:'Nunito',sans-serif;
+  color:var(--dark);background:var(--cream);
+  transition:.2s;outline:none;
+}
+input:focus,textarea:focus,select:focus{border-color:var(--gold)}
+input.error{border-color:var(--red);}
+textarea{resize:vertical;min-height:80px}
+
+.error-msg{
+  font-size:12px;color:var(--red);
+  margin-top:4px;display:none;
+}
+.error-msg.show{display:block}
+
+.order-summary{
+  background:var(--cream2);border-radius:12px;
+  padding:14px 16px;margin-bottom:16px;
+  border:1px solid rgba(212,160,23,.2);
+}
+.order-summary h4{
+  font-family:'Playfair Display',serif;
+  font-size:15px;color:var(--warm);margin-bottom:8px;
+}
+.summary-item{
+  display:flex;justify-content:space-between;
+  font-size:13px;color:#555;padding:3px 0;
+}
+.summary-total{
+  display:flex;justify-content:space-between;
+  font-weight:900;font-size:15px;color:var(--dark);
+  margin-top:8px;padding-top:8px;
+  border-top:1.5px solid rgba(212,160,23,.3);
+}
+
+/* ── WHATSAPP BUTTON ── */
+.confirm-btn{
+  width:100%;
+  background:var(--whatsapp);color:#fff;border:none;border-radius:12px;
+  padding:15px;font-weight:900;font-size:15px;
+  cursor:pointer;font-family:'Nunito',sans-serif;
+  transition:.2s;display:flex;align-items:center;justify-content:center;gap:10px;
+  box-shadow:0 4px 16px rgba(37,211,102,.35);
+}
+.confirm-btn:hover{background:#1ebe5d;transform:translateY(-1px);box-shadow:0 8px 24px rgba(37,211,102,.45)}
+.confirm-btn:active{transform:scale(.98)}
+
+.whatsapp-icon{
+  width:22px;height:22px;flex-shrink:0;
+}
+
+/* ── SUCCESS ── */
+.success-screen{
+  display:none;
+  text-align:center;padding:40px 24px;
+}
+.success-screen.show{display:block}
+.success-icon{font-size:64px;margin-bottom:16px;animation:pop .5s ease}
+@keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.2)}100%{transform:scale(1)}}
+.success-screen h3{
+  font-family:'Playfair Display',serif;
+  font-size:24px;color:var(--whatsapp);margin-bottom:8px;
+}
+.success-screen p{font-size:14px;color:#666;line-height:1.6}
+.success-ref{
+  display:inline-block;
+  background:var(--cream2);border:1.5px solid var(--gold);
+  border-radius:10px;padding:8px 20px;
+  font-weight:800;font-size:16px;color:var(--warm);
+  margin:14px 0;letter-spacing:2px;
+}
+.whatsapp-redirect-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--whatsapp);color:#fff;border:none;
+  border-radius:10px;padding:13px 28px;
+  font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;
+  font-size:14px;margin-top:8px;transition:.2s;
+  text-decoration:none;
+  box-shadow:0 4px 14px rgba(37,211,102,.3);
+}
+.whatsapp-redirect-btn:hover{background:#1ebe5d;transform:translateY(-1px)}
+
+.close-success{
+  display:block;
+  background:transparent;color:#aaa;border:none;
+  font-weight:600;cursor:pointer;font-family:'Nunito',sans-serif;
+  font-size:13px;margin-top:12px;transition:.2s;
+  text-decoration:underline;
+}
+.close-success:hover{color:var(--dark)}
+
+/* ── DELIVERY INFO ── */
+.delivery-info{
+  background:rgba(37,211,102,.08);
+  border:1px solid rgba(37,211,102,.2);
+  border-radius:10px;padding:10px 14px;
+  font-size:13px;color:#2a7a4a;font-weight:600;
+  margin-bottom:16px;
+  display:flex;align-items:center;gap:8px;
+}
+
+/* ── FOOTER ── */
+footer{
+  background:var(--dark);
+  border-top:3px solid var(--gold);
+  padding:24px;text-align:center;
+}
+.footer-stripe{
+  height:6px;
+  background:repeating-linear-gradient(90deg,
+    var(--gold) 0,var(--gold) 12px,
+    var(--red) 12px,var(--red) 24px,
+    var(--orange) 24px,var(--orange) 36px);
+  margin-bottom:20px;
+}
+footer p{color:rgba(255,255,255,.5);font-size:13px}
+footer strong{color:var(--gold)}
+
+/* ── Responsive ── */
+@media(max-width:600px){
+  .items-grid{grid-template-columns:repeat(2,1fr)}
+  .hero h1{font-size:36px}
+  .modal{border-radius:16px 16px 0 0;max-height:95vh;}
+  .modal-overlay{align-items:flex-end;padding:0;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <a class="nav-logo" href="#">
+    <svg viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="55" cy="55" r="52" fill="#1A0A00" stroke="#D4A017" stroke-width="2.5"/>
+      <ellipse cx="55" cy="62" rx="30" ry="7" fill="none" stroke="#D4A017" stroke-width="2"/>
+      <ellipse cx="55" cy="62" rx="22" ry="4.5" fill="#3B1A00" stroke="#F5C842" stroke-width="1.5"/>
+      <line x1="40" y1="30" x2="40" y2="58" stroke="#F5C842" stroke-width="2.2" stroke-linecap="round"/>
+      <line x1="37" y1="30" x2="37" y2="40" stroke="#F5C842" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="43" y1="30" x2="43" y2="40" stroke="#F5C842" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="70" y1="30" x2="70" y2="58" stroke="#F5C842" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M70 30 Q74 34 72 42 L70 42 Z" fill="#F5C842"/>
+      <polygon points="55,45 56.5,50 61,50 57.5,53 58.8,58 55,55.5 51.2,58 52.5,53 49,50 53.5,50" fill="#D4A017"/>
+    </svg>
+    <div class="nav-logo-text">
+      Chez Kolé
+      <small>Kédougou</small>
+    </div>
+  </a>
+  <div class="nav-actions">
+    <button class="cart-btn" onclick="openCart()">
+      🛒 Mon panier
+      <span class="cart-count" id="cartCount">0</span>
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-stripe"></div>
+  <svg class="hero-logo" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="55" cy="55" r="52" fill="#1A0A00" stroke="#D4A017" stroke-width="2.5"/>
+    <ellipse cx="55" cy="62" rx="30" ry="7" fill="none" stroke="#D4A017" stroke-width="2"/>
+    <ellipse cx="55" cy="62" rx="22" ry="4.5" fill="#3B1A00" stroke="#F5C842" stroke-width="1.5"/>
+    <line x1="40" y1="30" x2="40" y2="58" stroke="#F5C842" stroke-width="2.2" stroke-linecap="round"/>
+    <line x1="37" y1="30" x2="37" y2="40" stroke="#F5C842" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="43" y1="30" x2="43" y2="40" stroke="#F5C842" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="70" y1="30" x2="70" y2="58" stroke="#F5C842" stroke-width="2.2" stroke-linecap="round"/>
+    <path d="M70 30 Q74 34 72 42 L70 42 Z" fill="#F5C842"/>
+    <polygon points="55,45 56.5,50 61,50 57.5,53 58.8,58 55,55.5 51.2,58 52.5,53 49,50 53.5,50" fill="#D4A017"/>
+    <path d="M25 55 A30 30 0 0 1 85 55" fill="none" stroke="#C0392B" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.6"/>
+  </svg>
+  <h1><em>Chez</em> Kolé</h1>
+  <p>Saveurs authentiques & gourmandes</p>
+  <div class="hero-badge">📍 <span>Kédougou, Sénégal</span> · Livraison & Retrait disponibles</div>
+</div>
+
+<!-- MAIN -->
+<div class="main-layout">
+
+  <!-- MENU -->
+  <div class="menu-col">
+
+    <div class="cat-header">
+      <h2>🧆 Snacks Salés & Miniatures</h2>
+      <div class="cat-line"></div>
+    </div>
+    <div class="items-grid" id="snacks-grid"></div>
+
+    <div class="cat-header">
+      <h2>🌟 Spécialités & Grands Formats</h2>
+      <div class="cat-line"></div>
+    </div>
+    <div class="items-grid" id="specials-grid"></div>
+
+  </div>
+
+  <!-- CART SIDEBAR -->
+  <div class="cart-col">
+    <div class="cart-box">
+      <div class="cart-head">
+        <h3>🛒 Mon Panier</h3>
+        <button class="cart-clear" onclick="clearCart()">Vider</button>
+      </div>
+      <div id="cartBody">
+        <div class="cart-empty">
+          <div class="cart-empty-icon">🛍️</div>
+          <p>Votre panier est vide.<br/>Ajoutez des articles !</p>
+        </div>
+      </div>
+      <div class="cart-footer" id="cartFooter" style="display:none">
+        <div class="cart-total-row">
+          <span class="cart-total-label">Total</span>
+          <span class="cart-total-amount" id="cartTotal">0 FCFA</span>
+        </div>
+        <button class="order-btn" onclick="openModal()">
+          ✅ Passer la commande
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-stripe"></div>
+  <p><strong>Chez Kolé</strong> · Kédougou, Sénégal</p>
+  <p style="margin-top:6px">Fait maison avec amour ❤️</p>
+</footer>
+
+<!-- ORDER MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div id="modalForm">
+      <div class="modal-head">
+        <h3>📋 Votre Commande</h3>
+        <button class="modal-close" onclick="closeModal()" aria-label="Fermer">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="order-summary" id="orderSummary"></div>
+
+        <div class="form-group">
+          <label>Votre Nom *</label>
+          <input type="text" id="clientName" placeholder="Ex: Aminata Diallo" autocomplete="name"/>
+          <div class="error-msg" id="nameError">Veuillez entrer votre nom.</div>
+        </div>
+
+        <div class="form-group">
+          <label>Téléphone *</label>
+          <input type="tel" id="clientPhone" placeholder="Ex: 77 123 45 67" autocomplete="tel"/>
+          <div class="error-msg" id="phoneError">Veuillez entrer un numéro valide (7X XXX XX XX).</div>
+        </div>
+
+        <div class="form-group">
+          <label>Mode de récupération</label>
+          <select id="deliveryMode" onchange="toggleAddress()">
+            <option value="retrait">🏃 Retrait sur place</option>
+            <option value="livraison">🚚 Livraison (Kédougou)</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="addressGroup" style="display:none">
+          <label>Adresse de livraison *</label>
+          <input type="text" id="clientAddress" placeholder="Quartier, rue..."/>
+          <div class="error-msg" id="addressError">Veuillez entrer votre adresse.</div>
+        </div>
+
+        <div class="form-group">
+          <label>Note / Instructions (optionnel)</label>
+          <textarea id="clientNote" placeholder="Allergie, instructions spéciales..."></textarea>
+        </div>
+
+        <div class="delivery-info">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          La commande sera envoyée sur WhatsApp du propriétaire.
+        </div>
+
+        <button class="confirm-btn" onclick="confirmOrder()">
+          <svg class="whatsapp-icon" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Envoyer sur WhatsApp
+        </button>
+      </div>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="success-screen" id="successScreen">
+      <div class="success-icon">✅</div>
+      <h3>Commande envoyée !</h3>
+      <p>Votre commande a été transmise.<br/>Le propriétaire vous contactera pour confirmer.</p>
+      <div class="success-ref" id="successRef">–</div>
+      <p style="font-size:13px;color:#888;margin-bottom:16px">Si WhatsApp ne s'est pas ouvert automatiquement, cliquez ci-dessous :</p>
+      <a class="whatsapp-redirect-btn" id="whatsappFallback" href="#" target="_blank" rel="noopener">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Ouvrir WhatsApp
+      </a>
+      <button class="close-success" onclick="closeModal()">Fermer & continuer mes achats</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CONFIG ──
+const OWNER_PHONE = '221781608131'; // numéro sans espaces ni +
+
+// ── DATA ──
+const MENU = {
+  snacks: [
+    {id:'fataya',   emoji:'🥟', name:'Fataya',        price:100},
+    {id:'nems',     emoji:'🥢', name:'Nems',           price:150},
+    {id:'rissoles', emoji:'🫓', name:'Rissoles',       price:200},
+    {id:'minipizza',emoji:'🍕', name:'Mini-pizzas',    price:200},
+    {id:'croque',   emoji:'🥪', name:'Croque-monsieur',price:200},
+    {id:'beignet',  emoji:'🍩', name:'Beignets',       price:100},
+  ],
+  specials: [
+    {id:'crepe_s',  emoji:'🥞', name:'Crêpes sucrées',  price:500},
+    {id:'crepe_sal',emoji:'🧇', name:'Crêpes salées',   price:1000},
+    {id:'croissant',emoji:'🥐', name:'Croissants salés',price:1000},
+    {id:'sandwich', emoji:'🥖', name:'Sandwichs',        price:1250, note:'1 000 – 1 500 FCFA', priceDisplay:'1 000–1 500'},
+    {id:'tacos_np', emoji:'🌮', name:'Mini Tacos',       price:500,  note:'non panés'},
+    {id:'tacos_p',  emoji:'🌮', name:'Mini Tacos',       price:600,  note:'panés'},
+  ]
+};
+
+let cart = {};
+let pendingWhatsAppUrl = '';
+
+// ── RENDER MENU ──
+function renderMenu(){
+  const snacksEl = document.getElementById('snacks-grid');
+  const specialsEl = document.getElementById('specials-grid');
+  MENU.snacks.forEach((item,i)=>{ snacksEl.innerHTML += cardHTML(item, i*0.05); });
+  MENU.specials.forEach((item,i)=>{ specialsEl.innerHTML += cardHTML(item, i*0.05); });
+}
+
+function cardHTML(item, delay){
+  const priceLabel = item.priceDisplay ? item.priceDisplay + ' FCFA' : item.price + ' FCFA';
+  return `
+  <div class="item-card" style="animation-delay:${delay}s">
+    <div class="item-emoji">${item.emoji}</div>
+    <div class="item-name">${item.name}</div>
+    ${item.note ? `<div class="item-note">${item.note}</div>` : ''}
+    <div class="item-bottom">
+      <span class="item-price">${priceLabel}</span>
+      <button class="add-btn" onclick="addToCart('${item.id}')" title="Ajouter">+</button>
+    </div>
+  </div>`;
+}
+
+function findItem(id){
+  return [...MENU.snacks,...MENU.specials].find(i=>i.id===id);
+}
+
+// ── CART LOGIC ──
+function addToCart(id){
+  const item = findItem(id);
+  if(!item) return;
+  if(cart[id]){ cart[id].qty++; }
+  else { cart[id] = {item, qty:1}; }
+  updateCart();
+  bumpCount();
+}
+
+function removeFromCart(id){
+  if(!cart[id]) return;
+  cart[id].qty--;
+  if(cart[id].qty <= 0) delete cart[id];
+  updateCart();
+}
+
+function clearCart(){
+  cart = {};
+  updateCart();
+}
+
+function bumpCount(){
+  const el = document.getElementById('cartCount');
+  el.classList.remove('bump');
+  void el.offsetWidth;
+  el.classList.add('bump');
+  setTimeout(()=>el.classList.remove('bump'),300);
+}
+
+function getTotal(){
+  return Object.values(cart).reduce((s,e)=>s+e.item.price*e.qty,0);
+}
+
+function updateCart(){
+  const keys = Object.keys(cart);
+  const countEl = document.getElementById('cartCount');
+  const totalCount = Object.values(cart).reduce((s,e)=>s+e.qty,0);
+  countEl.textContent = totalCount;
+
+  const bodyEl = document.getElementById('cartBody');
+  const footerEl = document.getElementById('cartFooter');
+
+  if(keys.length === 0){
+    bodyEl.innerHTML = `<div class="cart-empty"><div class="cart-empty-icon">🛍️</div><p>Votre panier est vide.<br/>Ajoutez des articles !</p></div>`;
+    footerEl.style.display = 'none';
+    return;
+  }
+
+  let html = '<div class="cart-items">';
+  keys.forEach(id => {
+    const {item,qty} = cart[id];
+    const sub = item.price * qty;
+    html += `
+    <div class="cart-line">
+      <span class="cart-line-emoji">${item.emoji}</span>
+      <div style="flex:1">
+        <div class="cart-line-name">${item.name}</div>
+        ${item.note?`<div class="cart-line-note">${item.note}</div>`:''}
+      </div>
+      <div class="cart-line-controls">
+        <button class="qty-btn" onclick="removeFromCart('${id}')">−</button>
+        <span class="qty-num">${qty}</span>
+        <button class="qty-btn" onclick="addToCart('${id}')">+</button>
+      </div>
+      <span class="cart-line-price">${sub.toLocaleString()} F</span>
+    </div>`;
+  });
+  html += '</div>';
+  bodyEl.innerHTML = html;
+  footerEl.style.display = 'block';
+  document.getElementById('cartTotal').textContent = getTotal().toLocaleString() + ' FCFA';
+}
+
+// ── MODAL ──
+function openModal(){
+  if(Object.keys(cart).length===0) return;
+  renderOrderSummary();
+  // Reset form
+  document.getElementById('clientName').value = '';
+  document.getElementById('clientPhone').value = '';
+  document.getElementById('clientNote').value = '';
+  document.getElementById('clientAddress').value = '';
+  document.getElementById('deliveryMode').value = 'retrait';
+  document.getElementById('addressGroup').style.display = 'none';
+  clearErrors();
+  document.getElementById('modalOverlay').classList.add('open');
+  document.getElementById('modalForm').style.display = 'block';
+  document.getElementById('successScreen').classList.remove('show');
+}
+
+function closeModal(){
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+
+function closeModalOutside(e){
+  if(e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+function openCart(){
+  if(Object.keys(cart).length>0) openModal();
+  else {
+    document.querySelector('.cart-col').scrollIntoView({behavior:'smooth'});
+  }
+}
+
+function toggleAddress(){
+  const mode = document.getElementById('deliveryMode').value;
+  document.getElementById('addressGroup').style.display = mode==='livraison' ? 'block' : 'none';
+}
+
+function renderOrderSummary(){
+  let html = '<h4>🧾 Récapitulatif</h4>';
+  Object.values(cart).forEach(({item,qty}) => {
+    html += `<div class="summary-item">
+      <span>${item.emoji} ${item.name}${item.note?' ('+item.note+')':''} × ${qty}</span>
+      <span>${(item.price*qty).toLocaleString()} F</span>
+    </div>`;
+  });
+  html += `<div class="summary-total"><span>Total</span><span>${getTotal().toLocaleString()} FCFA</span></div>`;
+  document.getElementById('orderSummary').innerHTML = html;
+}
+
+// ── VALIDATION ──
+function clearErrors(){
+  ['clientName','clientPhone','clientAddress'].forEach(id=>{
+    document.getElementById(id).classList.remove('error');
+  });
+  ['nameError','phoneError','addressError'].forEach(id=>{
+    document.getElementById(id).classList.remove('show');
+  });
+}
+
+function validatePhone(phone){
+  // Accepte formats sénégalais : 7X XXX XX XX (avec ou sans espaces/tirets)
+  const cleaned = phone.replace(/[\s\-]/g,'');
+  return /^(221)?[7][0-9]{8}$/.test(cleaned);
+}
+
+// ── BUILD WHATSAPP MESSAGE ──
+function buildWhatsAppMessage(name, phone, mode, address, note, ref){
+  let msg = '';
+  msg += `🛍️ *NOUVELLE COMMANDE - Chez Kolé*\n`;
+  msg += `🔖 Réf : *${ref}*\n\n`;
+  msg += `👤 *Client :* ${name}\n`;
+  msg += `📱 *Téléphone :* ${phone}\n`;
+  msg += `🚚 *Mode :* ${mode === 'livraison' ? 'Livraison' : 'Retrait sur place'}\n`;
+  if(mode === 'livraison' && address){
+    msg += `📍 *Adresse :* ${address}\n`;
+  }
+  msg += `\n🧾 *Articles commandés :*\n`;
+  Object.values(cart).forEach(({item,qty})=>{
+    const sub = item.price * qty;
+    msg += `  • ${item.emoji} ${item.name}`;
+    if(item.note) msg += ` (${item.note})`;
+    msg += ` × ${qty} = ${sub.toLocaleString()} FCFA\n`;
+  });
+  msg += `\n💰 *TOTAL : ${getTotal().toLocaleString()} FCFA*\n`;
+  if(note){
+    msg += `\n📝 *Note :* ${note}\n`;
+  }
+  msg += `\n_Commande passée via le site Chez Kolé_`;
+  return msg;
+}
+
+// ── CONFIRM ORDER → WHATSAPP ──
+function confirmOrder(){
+  clearErrors();
+  const name    = document.getElementById('clientName').value.trim();
+  const phone   = document.getElementById('clientPhone').value.trim();
+  const mode    = document.getElementById('deliveryMode').value;
+  const address = document.getElementById('clientAddress').value.trim();
+  const note    = document.getElementById('clientNote').value.trim();
+
+  let valid = true;
+
+  if(!name){
+    document.getElementById('clientName').classList.add('error');
+    document.getElementById('nameError').classList.add('show');
+    valid = false;
+  }
+  if(!phone || !validatePhone(phone)){
+    document.getElementById('clientPhone').classList.add('error');
+    document.getElementById('phoneError').classList.add('show');
+    valid = false;
+  }
+  if(mode === 'livraison' && !address){
+    document.getElementById('clientAddress').classList.add('error');
+    document.getElementById('addressError').classList.add('show');
+    valid = false;
+  }
+
+  if(!valid) return;
+
+  // Générer référence commande
+  const ref = 'CK-' + Date.now().toString().slice(-6);
+
+  // Construire le message WhatsApp
+  const message = buildWhatsAppMessage(name, phone, mode, address, note, ref);
+  const encodedMsg = encodeURIComponent(message);
+  const waUrl = `https://wa.me/${OWNER_PHONE}?text=${encodedMsg}`;
+
+  // Sauvegarder l'URL en cas de fallback
+  pendingWhatsAppUrl = waUrl;
+  document.getElementById('whatsappFallback').href = waUrl;
+
+  // Afficher l'écran succès
+  document.getElementById('successRef').textContent = ref;
+  document.getElementById('modalForm').style.display = 'none';
+  document.getElementById('successScreen').classList.add('show');
+
+  // Vider le panier
+  cart = {};
+  updateCart();
+
+  // Ouvrir WhatsApp automatiquement
+  window.open(waUrl, '_blank');
+}
+
+// ── INIT ──
+renderMenu();
+</script>
+</body>
+</html>
