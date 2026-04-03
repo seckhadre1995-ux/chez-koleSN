@@ -474,6 +474,50 @@ footer{
 }
 footer p{color:rgba(255,255,255,.5);font-size:13px}
 footer strong{color:var(--gold)}
+/* --- SHELBY DESIGN UI IMPROVEMENTS --- */
+
+/* 1. Cart badge bounce effect */
+@keyframes cartBounce {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.6); }
+  100% { transform: scale(1); }
+}
+
+.cart-count.bump {
+  animation: cartBounce 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  background: var(--gold-light) !important;
+  color: var(--dark) !important;
+}
+
+/* 2. Smooth fade-in for menu items */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.item-card {
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+/* 3. Button click feedback */
+.add-btn:active {
+  transform: scale(0.85);
+  background: var(--gold-light) !important;
+}
+
+/* 4. Category hover effect */
+.cat-header {
+  transition: transform 0.3s ease;
+}
+.cat-header:hover {
+  transform: translateX(10px);
+}
 
 /* ── Responsive ── */
 @media(max-width:600px){
