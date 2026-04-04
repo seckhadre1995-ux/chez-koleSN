@@ -3,536 +3,1145 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Chez Kolé – Commander en ligne</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Nunito:wght@400;600;700;800&family=Dancing+Script:wght@700&display=swap" rel="stylesheet"/>
+<title>Chez Kolé – Commander en ligne | Kédougou</title>
+<meta name="description" content="Commandez en ligne chez Kolé – snacks, crêpes, sandwichs et spécialités maison à Kédougou, Sénégal."/>
+
+<!-- SEO & Open Graph -->
+<meta property="og:title" content="Chez Kolé – Commandez en ligne | Kédougou"/>
+<meta property="og:description" content="Snacks, crêpes, sandwichs & spécialités faites maison à Kédougou, Sénégal. Commandez via WhatsApp !"/>
+<meta property="og:type" content="restaurant.restaurant"/>
+<meta property="og:locale" content="fr_SN"/>
+<meta name="theme-color" content="#140800"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Chez Kolé"/>
+<!-- Favicon inline SVG -->
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 110 110'><circle cx='55' cy='55' r='52' fill='%231A0A00'/><polygon points='55,38 57,46 65,46 59,51 61,59 55,54 49,59 51,51 45,46 53,46' fill='%23D4A017'/></svg>"/>
+<!-- PWA Manifest -->
+<link rel="manifest" id="pwaManifest"/>
+<!-- Google Analytics (remplace UA-XXXXXXX par ton ID) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Nunito:wght@400;600;700;800;900&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-
 :root{
-  --gold:#D4A017;
-  --gold-light:#F5C842;
-  --dark:#1A0A00;
-  --warm:#2C1200;
-  --warm2:#3B1A00;
-  --cream:#FFF8EE;
-  --cream2:#FFF0D6;
-  --red:#C0392B;
-  --orange:#E07B39;
-  --green:#27AE60;
-  --whatsapp:#25D366;
-  --shadow: 0 8px 32px rgba(0,0,0,.18);
+  --gold:#D4A017; --gold-light:#F5C842; --gold-pale:#FFF3C4;
+  --dark:#140800; --warm:#2C1200; --warm2:#3B1A00; --warm3:#5C2E00;
+  --cream:#FFF8EE; --cream2:#FFF0D6; --cream3:#FDECC4;
+  --red:#C0392B; --orange:#E07B39; --green:#27AE60;
+  --whatsapp:#25D366; --whatsapp2:#1ebe5d;
+  --shadow-sm:0 2px 8px rgba(0,0,0,.1);
+  --shadow:0 8px 32px rgba(0,0,0,.15);
+  --shadow-lg:0 20px 60px rgba(0,0,0,.25);
+  --radius:16px; --radius-sm:10px; --radius-lg:24px;
+  --transition:.25s cubic-bezier(.4,0,.2,1);
 }
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--dark);min-height:100vh;overflow-x:hidden}
 
-html{scroll-behavior:smooth}
+/* ── SCROLL REVEAL ── */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease, transform .7s ease}
+.reveal.visible{opacity:1;transform:none}
+.reveal-left{opacity:0;transform:translateX(-30px);transition:opacity .7s ease,transform .7s ease}
+.reveal-left.visible{opacity:1;transform:none}
+.reveal-right{opacity:0;transform:translateX(30px);transition:opacity .7s ease,transform .7s ease}
+.reveal-right.visible{opacity:1;transform:none}
 
-body{
-  font-family:'Nunito',sans-serif;
-  background:var(--cream);
-  color:var(--dark);
-  min-height:100vh;
+/* ── LOADING SCREEN ── */
+#loadingScreen{
+  position:fixed;inset:0;z-index:9999;
+  background:var(--dark);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:20px;transition:opacity .6s ease, visibility .6s ease;
 }
+#loadingScreen.hidden{opacity:0;visibility:hidden}
+.loading-logo{width:90px;height:90px;animation:loadSpin 1.5s ease infinite}
+@keyframes loadSpin{0%{transform:rotate(0)scale(1)}50%{transform:rotate(180deg)scale(1.1)}100%{transform:rotate(360deg)scale(1)}}
+.loading-bar{width:200px;height:3px;background:rgba(255,255,255,.1);border-radius:10px;overflow:hidden}
+.loading-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--orange));animation:loadFill 1.4s ease forwards}
+@keyframes loadFill{from{width:0}to{width:100%}}
+.loading-text{font-family:'Dancing Script',cursive;color:var(--gold-light);font-size:22px}
+
+/* ── PROMO BANNER ── */
+.promo-bar{
+  background:linear-gradient(90deg,var(--warm),var(--warm3),var(--warm));
+  color:var(--gold-light);font-size:13px;font-weight:700;
+  text-align:center;padding:9px 16px;
+  position:relative;overflow:hidden;letter-spacing:.3px;
+  border-bottom:1px solid rgba(212,160,23,.3);
+}
+.promo-bar::before{
+  content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);
+  animation:shimmer 3s infinite;
+}
+@keyframes shimmer{to{left:160%}}
+.promo-bar span{color:#fff}
 
 /* ── NAVBAR ── */
 nav{
-  position:sticky;top:0;z-index:100;
-  background:var(--dark);
-  border-bottom:3px solid var(--gold);
+  position:sticky;top:0;z-index:500;
+  background:rgba(20,8,0,.96);
+  border-bottom:2px solid rgba(212,160,23,.4);
   display:flex;align-items:center;justify-content:space-between;
-  padding:0 24px;height:64px;
-  box-shadow:0 4px 20px rgba(0,0,0,.5);
+  padding:0 28px;height:68px;
+  backdrop-filter:blur(12px);
+  box-shadow:0 4px 24px rgba(0,0,0,.4);
+  transition:height .3s ease;
 }
+nav.scrolled{height:58px}
 
-.nav-logo{
-  display:flex;align-items:center;gap:12px;
-  text-decoration:none;
-}
-.nav-logo svg{width:40px;height:40px}
-.nav-logo-text{
-  font-family:'Playfair Display',serif;
-  font-size:22px;font-weight:900;
-  color:var(--gold-light);
-  line-height:1;
-}
-.nav-logo-text small{
-  display:block;font-size:11px;
-  font-family:'Nunito',sans-serif;
-  color:rgba(255,255,255,.5);
-  font-weight:600;letter-spacing:2px;
-  text-transform:uppercase;margin-top:1px;
-}
+.nav-logo{display:flex;align-items:center;gap:12px;text-decoration:none}
+.nav-logo svg{width:42px;height:42px;transition:transform .3s}
+.nav-logo:hover svg{transform:rotate(15deg) scale(1.05)}
+.nav-logo-text{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:var(--gold-light);line-height:1}
+.nav-logo-text small{display:block;font-size:10px;font-family:'Nunito',sans-serif;color:rgba(255,255,255,.45);font-weight:600;letter-spacing:3px;text-transform:uppercase;margin-top:2px}
+
+.nav-center{display:flex;gap:24px;align-items:center}
+.nav-link{color:rgba(255,255,255,.65);text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;transition:color .2s;padding:4px 0;border-bottom:2px solid transparent;transition:all .2s}
+.nav-link:hover{color:var(--gold-light);border-bottom-color:var(--gold)}
 
 .nav-actions{display:flex;align-items:center;gap:12px}
 
-.cart-btn{
-  background:var(--gold);color:var(--dark);
-  border:none;border-radius:50px;
-  padding:8px 18px;font-weight:800;font-size:14px;
-  cursor:pointer;display:flex;align-items:center;gap:8px;
-  transition:all .2s;font-family:'Nunito',sans-serif;
-  position:relative;
+.search-btn{
+  background:transparent;border:1.5px solid rgba(212,160,23,.3);
+  color:rgba(255,255,255,.6);border-radius:8px;
+  width:36px;height:36px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:16px;
+  transition:all .2s;
 }
-.cart-btn:hover{background:var(--gold-light);transform:scale(1.05)}
+.search-btn:hover{border-color:var(--gold);color:var(--gold-light)}
+
+.cart-btn{
+  background:linear-gradient(135deg,var(--gold),var(--orange));
+  color:var(--dark);border:none;border-radius:50px;
+  padding:9px 20px;font-weight:900;font-size:14px;
+  cursor:pointer;display:flex;align-items:center;gap:9px;
+  transition:all .2s;font-family:'Nunito',sans-serif;
+  box-shadow:0 4px 14px rgba(212,160,23,.35);
+}
+.cart-btn:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 8px 24px rgba(212,160,23,.45)}
+
 .cart-count{
-  background:var(--red);color:#fff;
-  border-radius:50%;width:20px;height:20px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:12px;font-weight:800;
+  background:var(--red);color:#fff;border-radius:50%;
+  width:22px;height:22px;display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:900;min-width:22px;
   transition:transform .2s;
 }
-.cart-count.bump{transform:scale(1.4)}
+@keyframes cartBounce{0%{transform:scale(1)}40%{transform:scale(1.7)}70%{transform:scale(.85)}100%{transform:scale(1)}}
+.cart-count.bump{animation:cartBounce .45s cubic-bezier(.175,.885,.32,1.275)}
+
+/* ── SEARCH BAR ── */
+.search-overlay{
+  position:fixed;top:0;left:0;right:0;z-index:600;
+  background:rgba(20,8,0,.97);padding:18px 24px;
+  transform:translateY(-100%);transition:transform .35s cubic-bezier(.4,0,.2,1);
+  backdrop-filter:blur(16px);border-bottom:2px solid rgba(212,160,23,.3);
+}
+.search-overlay.open{transform:translateY(0)}
+.search-inner{max-width:600px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.search-input{
+  flex:1;background:rgba(255,255,255,.08);border:1.5px solid rgba(212,160,23,.3);
+  border-radius:12px;padding:12px 18px;color:#fff;font-family:'Nunito',sans-serif;
+  font-size:16px;outline:none;transition:.2s;
+}
+.search-input::placeholder{color:rgba(255,255,255,.4)}
+.search-input:focus{border-color:var(--gold)}
+.search-close{background:transparent;border:none;color:rgba(255,255,255,.6);font-size:22px;cursor:pointer;transition:.2s}
+.search-close:hover{color:var(--red)}
+.no-results{text-align:center;padding:40px 20px;color:#aaa;font-size:15px;display:none}
+.no-results.show{display:block}
 
 /* ── HERO ── */
 .hero{
-  background:var(--warm);
-  padding:60px 24px 50px;
-  text-align:center;
-  position:relative;overflow:hidden;
+  background:var(--dark);
+  min-height:88vh;position:relative;overflow:hidden;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:0 20px 60px;text-align:center;
 }
-.hero::before{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse at 50% 0%,rgba(212,160,23,.2) 0%,transparent 65%);
+
+/* Parallax food images in hero */
+.hero-bg{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% -10%,rgba(212,160,23,.18) 0%,transparent 65%),
+    radial-gradient(ellipse 40% 40% at 10% 80%,rgba(192,57,43,.12) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 40% at 90% 80%,rgba(224,123,57,.1) 0%,transparent 60%);
   pointer-events:none;
 }
+
+/* Floating food orbs */
+.hero-orb{
+  position:absolute;border-radius:50%;overflow:hidden;
+  border:2px solid rgba(212,160,23,.25);
+  box-shadow:0 8px 32px rgba(0,0,0,.5);
+  opacity:0;
+  animation:orbAppear 1s ease forwards;
+}
+.hero-orb img{width:100%;height:100%;object-fit:cover;filter:brightness(.85) saturate(1.2)}
+.orb1{width:120px;height:120px;top:12%;left:6%;animation-delay:.8s;animation:orbAppear .8s .8s ease forwards, float1 6s 1.6s ease-in-out infinite}
+.orb2{width:90px;height:90px;top:20%;right:8%;animation-delay:1s;animation:orbAppear .8s 1s ease forwards, float2 7s 1.8s ease-in-out infinite}
+.orb3{width:75px;height:75px;bottom:20%;left:10%;animation-delay:1.2s;animation:orbAppear .8s 1.2s ease forwards, float1 8s 2s ease-in-out infinite}
+.orb4{width:100px;height:100px;bottom:15%;right:6%;animation-delay:1.1s;animation:orbAppear .8s 1.1s ease forwards, float2 5.5s 1.9s ease-in-out infinite}
+.orb5{width:60px;height:60px;top:55%;left:3%;animation-delay:1.3s;animation:orbAppear .8s 1.3s ease forwards, float1 7.5s 2.1s ease-in-out infinite}
+
+@keyframes orbAppear{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
+@keyframes float1{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
+@keyframes float2{0%,100%{transform:translateY(0)}50%{transform:translateY(14px)}}
+
 .hero-stripe{
-  height:7px;
-  background:repeating-linear-gradient(90deg,
-    var(--gold) 0,var(--gold) 14px,
-    var(--red) 14px,var(--red) 28px,
-    var(--orange) 28px,var(--orange) 42px,
-    var(--gold) 42px,var(--gold) 56px);
-  margin-bottom:36px;
+  width:100%;height:6px;
+  background:repeating-linear-gradient(90deg,var(--gold) 0,var(--gold) 14px,var(--red) 14px,var(--red) 28px,var(--orange) 28px,var(--orange) 42px,var(--gold) 42px,var(--gold) 56px);
+  position:absolute;top:0;left:0;
 }
-.hero-logo{
-  width:100px;height:100px;
-  margin:0 auto 20px;
-  filter:drop-shadow(0 6px 16px rgba(0,0,0,.5));
-  animation:heroIn .8s ease both;
+.hero-stripe-bottom{
+  position:absolute;bottom:0;left:0;right:0;height:80px;
+  background:linear-gradient(to bottom,transparent,var(--cream));
+  pointer-events:none;
 }
-@keyframes heroIn{from{opacity:0;transform:scale(.8) translateY(-10px)}to{opacity:1;transform:none}}
+
+.hero-content{position:relative;z-index:2;max-width:680px}
+
+.hero-logo-wrap{margin-bottom:24px;animation:heroLogoIn 1s .2s ease both}
+@keyframes heroLogoIn{from{opacity:0;transform:scale(.7) rotateY(90deg)}to{opacity:1;transform:scale(1) rotateY(0)}}
+.hero-logo{width:110px;height:110px;filter:drop-shadow(0 10px 30px rgba(0,0,0,.6))}
+
+.hero-tag{
+  display:inline-block;background:rgba(212,160,23,.15);
+  border:1px solid rgba(212,160,23,.4);border-radius:50px;
+  padding:5px 18px;color:var(--gold);font-size:12px;font-weight:800;
+  letter-spacing:3px;text-transform:uppercase;
+  margin-bottom:18px;animation:heroIn .7s .4s ease both;
+}
+@keyframes heroIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 
 .hero h1{
   font-family:'Playfair Display',serif;
-  font-size:clamp(38px,8vw,62px);font-weight:900;
-  color:var(--gold-light);
-  line-height:1.05;
-  animation:slideUp .7s .1s ease both;
+  font-size:clamp(48px,10vw,80px);font-weight:900;
+  color:#fff;line-height:1;
+  animation:heroIn .7s .5s ease both;
+  text-shadow:0 4px 20px rgba(0,0,0,.5);
 }
-.hero h1 em{color:#fff;font-style:normal}
-.hero p{
+.hero h1 .accent{
+  color:var(--gold-light);font-style:italic;
+  display:block;font-size:.8em;
+}
+
+.hero-sub{
   font-family:'Dancing Script',cursive;
-  font-size:20px;color:rgba(255,255,255,.7);
-  margin-top:10px;
-  animation:slideUp .7s .2s ease both;
+  font-size:clamp(18px,4vw,24px);color:rgba(255,255,255,.6);
+  margin-top:12px;animation:heroIn .7s .6s ease both;
 }
-.hero-badge{
-  display:inline-flex;align-items:center;gap:8px;
-  background:rgba(255,255,255,.08);
-  border:1px solid rgba(212,160,23,.3);
-  border-radius:50px;padding:8px 20px;
-  color:rgba(255,255,255,.7);font-size:13px;font-weight:600;
-  margin-top:18px;
-  animation:slideUp .7s .3s ease both;
+
+.hero-pills{
+  display:flex;flex-wrap:wrap;gap:10px;justify-content:center;
+  margin-top:28px;animation:heroIn .7s .7s ease both;
 }
-.hero-badge span{color:var(--gold)}
-
-@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
-
-/* ── LAYOUT ── */
-.main-layout{
-  max-width:1100px;margin:0 auto;
-  padding:36px 20px 60px;
-  display:grid;
-  grid-template-columns:1fr 340px;
-  gap:32px;
-  align-items:start;
+.hero-pill{
+  display:flex;align-items:center;gap:7px;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
+  border-radius:50px;padding:8px 16px;
+  color:rgba(255,255,255,.75);font-size:13px;font-weight:700;
+  backdrop-filter:blur(8px);
 }
-@media(max-width:800px){.main-layout{grid-template-columns:1fr}}
+.hero-pill .dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
-/* ── MENU ── */
-.menu-col{}
-
-.cat-header{
-  display:flex;align-items:center;gap:14px;
-  margin:28px 0 16px;
+.hero-cta{
+  display:flex;gap:14px;justify-content:center;flex-wrap:wrap;
+  margin-top:32px;animation:heroIn .7s .8s ease both;
 }
-.cat-header h2{
+.btn-primary{
+  background:linear-gradient(135deg,var(--gold),var(--orange));
+  color:var(--dark);border:none;border-radius:50px;
+  padding:14px 32px;font-weight:900;font-size:15px;
+  cursor:pointer;font-family:'Nunito',sans-serif;
+  transition:all .25s;box-shadow:0 6px 24px rgba(212,160,23,.4);
+  text-decoration:none;display:inline-flex;align-items:center;gap:8px;
+}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(212,160,23,.5)}
+.btn-outline{
+  background:transparent;border:2px solid rgba(255,255,255,.25);
+  color:rgba(255,255,255,.8);border-radius:50px;
+  padding:14px 28px;font-weight:700;font-size:14px;
+  cursor:pointer;font-family:'Nunito',sans-serif;
+  transition:all .25s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;
+}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold-light);transform:translateY(-2px)}
+
+/* ── STATS SECTION ── */
+.stats-section{
+  background:var(--warm);border-top:2px solid rgba(212,160,23,.3);
+  border-bottom:2px solid rgba(212,160,23,.3);
+  padding:24px 0;
+}
+.stats-inner{
+  max-width:900px;margin:0 auto;
+  display:flex;justify-content:space-around;flex-wrap:wrap;gap:20px;padding:0 24px;
+}
+.stat-item{text-align:center}
+.stat-num{
   font-family:'Playfair Display',serif;
-  font-size:20px;color:var(--warm);
-  white-space:nowrap;
-}
-.cat-line{flex:1;height:1.5px;background:linear-gradient(90deg,var(--gold),transparent)}
-
-.items-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
-  gap:14px;
-}
-
-.item-card{
-  background:#fff;
-  border-radius:14px;
-  border:1.5px solid rgba(212,160,23,.2);
-  padding:16px 14px 14px;
-  display:flex;flex-direction:column;gap:8px;
-  box-shadow:0 2px 12px rgba(0,0,0,.06);
-  transition:all .25s;
-  animation:cardIn .5s ease both;
-  cursor:default;
-}
-.item-card:hover{
-  transform:translateY(-4px);
-  box-shadow:0 8px 24px rgba(0,0,0,.12);
-  border-color:var(--gold);
-}
-
-@keyframes cardIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-
-.item-emoji{font-size:32px;line-height:1}
-.item-name{
-  font-weight:800;font-size:14px;
-  color:var(--dark);line-height:1.3;
-}
-.item-note{font-size:11.5px;color:#888;font-style:italic}
-.item-bottom{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-top:auto;
-}
-.item-price{
-  font-family:'Playfair Display',serif;
-  font-size:15px;font-weight:700;
-  color:var(--red);
-}
-.add-btn{
-  background:var(--warm);color:var(--gold-light);
-  border:none;border-radius:8px;
-  width:32px;height:32px;font-size:20px;
-  cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  transition:all .15s;font-weight:700;
+  font-size:32px;font-weight:900;color:var(--gold-light);
   line-height:1;
 }
-.add-btn:hover{background:var(--gold);color:var(--dark);transform:scale(1.15)}
-.add-btn:active{transform:scale(.95)}
+.stat-label{font-size:12px;color:rgba(255,255,255,.5);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-top:4px}
+
+/* ── CATEGORY TABS ── */
+.cat-tabs-wrap{
+  background:var(--cream2);border-bottom:2px solid rgba(212,160,23,.2);
+  position:sticky;top:68px;z-index:100;
+  transition:top .3s;
+}
+nav.scrolled ~ .cat-tabs-wrap,.scrolled-nav .cat-tabs-wrap{top:58px}
+.cat-tabs{
+  max-width:1100px;margin:0 auto;
+  display:flex;gap:4px;padding:10px 20px;overflow-x:auto;
+  scrollbar-width:none;
+}
+.cat-tabs::-webkit-scrollbar{display:none}
+.cat-tab{
+  background:transparent;border:1.5px solid rgba(44,18,0,.15);
+  color:var(--warm3);border-radius:50px;
+  padding:8px 18px;font-size:13px;font-weight:800;
+  cursor:pointer;white-space:nowrap;transition:all .2s;
+  font-family:'Nunito',sans-serif;
+  display:flex;align-items:center;gap:6px;
+}
+.cat-tab:hover{background:var(--warm);color:var(--gold-light);border-color:var(--warm)}
+.cat-tab.active{background:var(--warm);color:var(--gold-light);border-color:var(--warm);box-shadow:0 4px 12px rgba(44,18,0,.2)}
+
+/* ── FEATURED BANNER ── */
+.featured-section{
+  max-width:1100px;margin:40px auto 0;padding:0 20px;
+}
+.featured-title{
+  font-family:'Playfair Display',serif;
+  font-size:14px;color:var(--gold);font-weight:700;
+  letter-spacing:3px;text-transform:uppercase;margin-bottom:14px;
+  display:flex;align-items:center;gap:10px;
+}
+.featured-title::before,.featured-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--gold),transparent)}
+.featured-title::before{background:linear-gradient(270deg,var(--gold),transparent)}
+
+.featured-scroll{display:flex;gap:14px;overflow-x:auto;padding-bottom:10px;scrollbar-width:none}
+.featured-scroll::-webkit-scrollbar{display:none}
+.featured-card{
+  flex-shrink:0;width:220px;
+  background:var(--warm);border-radius:var(--radius);overflow:hidden;
+  border:1.5px solid rgba(212,160,23,.25);
+  box-shadow:var(--shadow-sm);cursor:pointer;
+  transition:all .25s;position:relative;
+}
+.featured-card:hover{transform:translateY(-5px) scale(1.02);box-shadow:var(--shadow);border-color:var(--gold)}
+.featured-card-img{width:100%;height:130px;object-fit:cover;display:block}
+.featured-card-body{padding:12px}
+.featured-card-name{font-weight:800;font-size:14px;color:var(--gold-light)}
+.featured-card-price{font-family:'Playfair Display',serif;font-size:16px;color:var(--orange);margin-top:4px}
+.featured-badge{
+  position:absolute;top:8px;left:8px;
+  background:var(--red);color:#fff;border-radius:6px;
+  padding:3px 8px;font-size:10px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;
+}
+
+/* ── MAIN LAYOUT ── */
+.main-layout{
+  max-width:1100px;margin:0 auto;
+  padding:36px 20px 80px;
+  display:grid;
+  grid-template-columns:1fr 340px;
+  gap:32px;align-items:start;
+}
+@media(max-width:880px){.main-layout{grid-template-columns:1fr}}
+
+/* ── CATEGORY SECTION ── */
+.cat-section{scroll-margin-top:130px}
+.cat-header{display:flex;align-items:center;gap:14px;margin:0 0 18px}
+.cat-header-icon{
+  width:42px;height:42px;border-radius:12px;
+  background:linear-gradient(135deg,var(--warm),var(--warm3));
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+  border:1.5px solid rgba(212,160,23,.3);flex-shrink:0;
+}
+.cat-header h2{font-family:'Playfair Display',serif;font-size:21px;color:var(--warm);white-space:nowrap;font-weight:900}
+.cat-header-count{font-size:12px;color:var(--gold);font-weight:800;background:var(--gold-pale);border-radius:50px;padding:2px 9px}
+.cat-line{flex:1;height:1.5px;background:linear-gradient(90deg,rgba(212,160,23,.5),transparent)}
+
+.items-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:16px;margin-bottom:36px}
+
+/* ── ITEM CARD (with photo) ── */
+.item-card{
+  background:#fff;border-radius:var(--radius);
+  border:1.5px solid rgba(212,160,23,.15);
+  overflow:hidden;display:flex;flex-direction:column;
+  box-shadow:var(--shadow-sm);
+  transition:all .3s cubic-bezier(.4,0,.2,1);
+  position:relative;cursor:default;
+}
+.item-card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 12px 32px rgba(0,0,0,.14);
+  border-color:rgba(212,160,23,.5);
+}
+.item-card:hover .item-img img{transform:scale(1.08)}
+
+.item-img{
+  width:100%;height:140px;overflow:hidden;position:relative;
+  background:var(--cream3);
+}
+.item-img img{
+  width:100%;height:100%;object-fit:cover;
+  transition:transform .5s cubic-bezier(.4,0,.2,1);
+  display:block;
+}
+.item-img-fallback{
+  width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+  font-size:52px;background:linear-gradient(135deg,var(--cream2),var(--cream3));
+}
+
+.item-pop-badge{
+  position:absolute;top:8px;left:8px;z-index:2;
+  background:var(--red);color:#fff;border-radius:6px;
+  padding:3px 8px;font-size:10px;font-weight:900;letter-spacing:.5px;
+  text-transform:uppercase;
+}
+.item-new-badge{
+  position:absolute;top:8px;left:8px;z-index:2;
+  background:var(--green);color:#fff;border-radius:6px;
+  padding:3px 8px;font-size:10px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;
+}
+
+.item-body{padding:13px 13px 12px;display:flex;flex-direction:column;gap:6px;flex:1}
+.item-name{font-weight:800;font-size:14px;color:var(--dark);line-height:1.3}
+.item-note{font-size:11.5px;color:#999;font-style:italic;line-height:1.4}
+.item-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:2px}
+.item-tag{background:var(--cream2);border-radius:4px;padding:2px 7px;font-size:10px;font-weight:700;color:var(--warm3);letter-spacing:.3px}
+
+.item-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:8px}
+.item-price{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--red)}
+.item-price-sub{font-size:11px;color:#bbb;font-weight:600}
+
+.add-btn{
+  background:var(--warm);color:var(--gold-light);border:none;border-radius:10px;
+  width:36px;height:36px;font-size:22px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .18s;font-weight:700;line-height:1;
+  box-shadow:0 2px 8px rgba(44,18,0,.2);
+}
+.add-btn:hover{background:var(--gold);color:var(--dark);transform:scale(1.12)}
+.add-btn:active{transform:scale(.9)}
 
 /* ── CART ── */
-.cart-col{position:sticky;top:80px}
-
+.cart-col{position:sticky;top:136px}
 .cart-box{
-  background:#fff;
-  border-radius:18px;
-  border:2px solid rgba(212,160,23,.25);
-  overflow:hidden;
+  background:#fff;border-radius:var(--radius-lg);
+  border:2px solid rgba(212,160,23,.2);overflow:hidden;
   box-shadow:var(--shadow);
 }
-
 .cart-head{
-  background:var(--warm);
-  padding:16px 20px;
-  display:flex;align-items:center;justify-content:space-between;
+  background:linear-gradient(135deg,var(--warm),var(--warm3));
+  padding:18px 22px;display:flex;align-items:center;justify-content:space-between;
 }
-.cart-head h3{
-  font-family:'Playfair Display',serif;
-  color:var(--gold-light);font-size:18px;
-}
+.cart-head h3{font-family:'Playfair Display',serif;color:var(--gold-light);font-size:19px;display:flex;align-items:center;gap:8px}
 .cart-clear{
   background:transparent;border:1px solid rgba(255,255,255,.2);
-  color:rgba(255,255,255,.5);
-  border-radius:6px;padding:4px 10px;font-size:12px;
-  cursor:pointer;transition:.2s;font-family:'Nunito',sans-serif;
+  color:rgba(255,255,255,.5);border-radius:7px;padding:5px 11px;font-size:12px;
+  cursor:pointer;transition:.2s;font-family:'Nunito',sans-serif;font-weight:700;
 }
 .cart-clear:hover{border-color:var(--red);color:var(--red)}
 
-.cart-empty{
-  padding:32px 20px;text-align:center;
-  color:#bbb;font-size:14px;
-}
-.cart-empty-icon{font-size:40px;margin-bottom:8px}
+.cart-empty{padding:40px 20px;text-align:center;color:#ccc;font-size:14px}
+.cart-empty-icon{font-size:52px;margin-bottom:12px;opacity:.6}
+.cart-empty p{font-weight:700;line-height:1.7;color:#bbb}
 
-.cart-items{max-height:320px;overflow-y:auto;padding:12px 16px}
-.cart-items::-webkit-scrollbar{width:4px}
+.cart-items{max-height:340px;overflow-y:auto;padding:10px 16px}
+.cart-items::-webkit-scrollbar{width:3px}
 .cart-items::-webkit-scrollbar-thumb{background:var(--gold);border-radius:4px}
 
 .cart-line{
   display:flex;align-items:center;gap:10px;
-  padding:8px 0;border-bottom:1px dashed rgba(212,160,23,.2);
-  animation:slideIn .2s ease;
+  padding:10px 0;border-bottom:1px dashed rgba(212,160,23,.18);
+  animation:slideIn .22s ease;
 }
-@keyframes slideIn{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:none}}
-
+@keyframes slideIn{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:none}}
 .cart-line:last-child{border-bottom:none}
-.cart-line-emoji{font-size:20px;flex-shrink:0}
-.cart-line-name{flex:1;font-size:13px;font-weight:700;color:var(--dark)}
-.cart-line-note{font-size:11px;color:#aaa;font-style:italic}
+.cart-line-thumb{
+  width:44px;height:44px;border-radius:10px;overflow:hidden;flex-shrink:0;
+  border:1.5px solid rgba(212,160,23,.2);background:var(--cream2);
+}
+.cart-line-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.cart-line-thumb-fallback{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:22px}
+.cart-line-name{flex:1;font-size:13px;font-weight:800;color:var(--dark);line-height:1.3}
+.cart-line-note{font-size:10px;color:#bbb;font-style:italic}
 .cart-line-controls{display:flex;align-items:center;gap:6px}
 .qty-btn{
   background:var(--cream2);border:1px solid rgba(212,160,23,.3);
-  border-radius:6px;width:24px;height:24px;
-  cursor:pointer;font-size:15px;font-weight:800;
-  display:flex;align-items:center;justify-content:center;
-  color:var(--dark);transition:.15s;
+  border-radius:7px;width:26px;height:26px;cursor:pointer;
+  font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center;
+  color:var(--dark);transition:.15s;line-height:1;
 }
 .qty-btn:hover{background:var(--gold);color:var(--dark)}
-.qty-num{font-weight:800;font-size:13px;min-width:16px;text-align:center}
-.cart-line-price{
-  font-family:'Playfair Display',serif;
-  font-size:13px;font-weight:700;color:var(--red);
-  min-width:60px;text-align:right;
-}
+.qty-num{font-weight:900;font-size:14px;min-width:18px;text-align:center}
+.cart-line-price{font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--red);min-width:62px;text-align:right}
 
 .cart-footer{
-  background:var(--cream2);
-  padding:14px 20px;
-  border-top:1.5px solid rgba(212,160,23,.2);
+  background:linear-gradient(to bottom,var(--cream2),var(--cream3));
+  padding:16px 22px;border-top:1.5px solid rgba(212,160,23,.2);
 }
-.cart-total-row{
-  display:flex;justify-content:space-between;align-items:center;
-  margin-bottom:14px;
-}
-.cart-total-label{font-weight:700;font-size:14px}
-.cart-total-amount{
-  font-family:'Playfair Display',serif;
-  font-size:20px;font-weight:900;color:var(--red);
-}
-
+.cart-subtotal-row{display:flex;justify-content:space-between;font-size:13px;color:#888;margin-bottom:4px}
+.cart-total-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-top:8px;border-top:1.5px dashed rgba(212,160,23,.3)}
+.cart-total-label{font-weight:800;font-size:15px}
+.cart-total-amount{font-family:'Playfair Display',serif;font-size:24px;font-weight:900;color:var(--red)}
 .order-btn{
-  width:100%;
-  background:linear-gradient(135deg,var(--gold),var(--orange));
-  color:var(--dark);border:none;border-radius:12px;
-  padding:14px;font-weight:900;font-size:15px;
-  cursor:pointer;transition:all .2s;
-  font-family:'Nunito',sans-serif;
-  display:flex;align-items:center;justify-content:center;gap:8px;
-  box-shadow:0 4px 16px rgba(212,160,23,.35);
+  width:100%;background:linear-gradient(135deg,var(--gold),var(--orange));
+  color:var(--dark);border:none;border-radius:var(--radius-sm);
+  padding:15px;font-weight:900;font-size:15px;cursor:pointer;transition:all .2s;
+  font-family:'Nunito',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;
+  box-shadow:0 4px 18px rgba(212,160,23,.35);
 }
-.order-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(212,160,23,.45)}
+.order-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(212,160,23,.5)}
 .order-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
 
-/* ── ORDER MODAL ── */
+.cart-trust{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px;font-size:11.5px;color:#aaa;font-weight:700}
+
+/* ── INFO SECTION ── */
+.info-section{
+  background:var(--warm);padding:50px 20px;
+  border-top:3px solid rgba(212,160,23,.3);
+}
+.info-inner{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:32px}
+.info-card{
+  background:rgba(255,255,255,.05);border:1px solid rgba(212,160,23,.2);
+  border-radius:var(--radius);padding:24px 20px;
+  transition:all .25s;
+}
+.info-card:hover{background:rgba(255,255,255,.08);border-color:rgba(212,160,23,.4);transform:translateY(-4px)}
+.info-card-icon{font-size:32px;margin-bottom:12px}
+.info-card-title{font-family:'Playfair Display',serif;font-size:18px;color:var(--gold-light);margin-bottom:10px}
+.info-card-text{font-size:13px;color:rgba(255,255,255,.6);line-height:1.8;font-weight:600}
+.info-card-text strong{color:rgba(255,255,255,.9)}
+
+/* ── GALLERY ── */
+.gallery-section{padding:50px 20px;background:var(--cream2)}
+.gallery-section h2{font-family:'Playfair Display',serif;font-size:30px;text-align:center;color:var(--warm);margin-bottom:6px}
+.gallery-section .sub{text-align:center;color:#aaa;font-size:14px;margin-bottom:24px}
+.gallery-grid{
+  max-width:1000px;margin:0 auto;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;
+}
+.gallery-item{
+  border-radius:12px;overflow:hidden;height:160px;
+  cursor:pointer;position:relative;
+}
+.gallery-item img{width:100%;height:100%;object-fit:cover;transition:transform .4s ease;display:block}
+.gallery-item:hover img{transform:scale(1.08)}
+.gallery-item-overlay{
+  position:absolute;inset:0;background:rgba(20,8,0,.5);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:.3s;font-size:28px;
+}
+.gallery-item:hover .gallery-item-overlay{opacity:1}
+
+/* ── TESTIMONIALS ── */
+.testimonials-section{padding:50px 20px;background:var(--cream)}
+.testimonials-section h2{font-family:'Playfair Display',serif;font-size:28px;text-align:center;color:var(--warm);margin-bottom:24px}
+.testimonials-grid{max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.testimonial-card{
+  background:#fff;border-radius:var(--radius);padding:22px 20px;
+  border:1.5px solid rgba(212,160,23,.15);box-shadow:var(--shadow-sm);
+  transition:all .25s;
+}
+.testimonial-card:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:rgba(212,160,23,.35)}
+.testimonial-stars{color:var(--gold-light);font-size:16px;margin-bottom:10px;letter-spacing:2px}
+.testimonial-text{font-size:14px;color:#555;line-height:1.7;font-style:italic;margin-bottom:14px}
+.testimonial-author{display:flex;align-items:center;gap:10px}
+.testimonial-avatar{
+  width:38px;height:38px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),var(--orange));
+  display:flex;align-items:center;justify-content:center;font-size:16px;
+  font-weight:900;color:var(--dark);font-family:'Playfair Display',serif;flex-shrink:0;
+}
+.testimonial-name{font-weight:800;font-size:13px;color:var(--dark)}
+.testimonial-date{font-size:11px;color:#bbb}
+
+/* ── TOAST ── */
+#toastContainer{position:fixed;bottom:24px;right:24px;z-index:800;display:flex;flex-direction:column-reverse;gap:10px}
+.toast{
+  background:var(--warm);color:var(--gold-light);
+  border:1.5px solid rgba(212,160,23,.4);border-radius:14px;
+  padding:14px 18px;font-size:14px;font-weight:700;
+  display:flex;align-items:center;gap:10px;max-width:300px;
+  box-shadow:0 8px 28px rgba(0,0,0,.25);
+  animation:toastIn .35s cubic-bezier(.175,.885,.32,1.275) both;
+}
+.toast.out{animation:toastOut .3s ease forwards}
+@keyframes toastIn{from{opacity:0;transform:translateX(50px) scale(.9)}to{opacity:1;transform:none}}
+@keyframes toastOut{to{opacity:0;transform:translateX(50px) scale(.9)}}
+.toast-img{width:36px;height:36px;border-radius:8px;object-fit:cover;flex-shrink:0;border:1.5px solid rgba(212,160,23,.3)}
+
+/* ── MOBILE FLOATING CART ── */
+.mobile-cart-fab{
+  display:none;position:fixed;bottom:20px;right:20px;z-index:400;
+  background:linear-gradient(135deg,var(--gold),var(--orange));
+  color:var(--dark);border:none;border-radius:50px;
+  padding:14px 22px;font-weight:900;font-size:15px;
+  cursor:pointer;box-shadow:0 8px 28px rgba(212,160,23,.5);
+  font-family:'Nunito',sans-serif;transition:all .25s;
+  display:none;align-items:center;gap:10px;
+}
+.mobile-cart-fab:hover{transform:scale(1.04);box-shadow:0 12px 36px rgba(212,160,23,.6)}
+
+/* ── MODAL ── */
 .modal-overlay{
-  display:none;
-  position:fixed;inset:0;z-index:200;
-  background:rgba(0,0,0,.65);
-  backdrop-filter:blur(4px);
-  align-items:center;justify-content:center;
-  padding:20px;
+  display:none;position:fixed;inset:0;z-index:700;
+  background:rgba(0,0,0,.7);backdrop-filter:blur(6px);
+  align-items:center;justify-content:center;padding:20px;
 }
 .modal-overlay.open{display:flex}
-
 .modal{
-  background:#fff;border-radius:20px;
-  max-width:480px;width:100%;
-  overflow:hidden;
-  box-shadow:0 30px 80px rgba(0,0,0,.4);
-  animation:modalIn .3s ease;
-  max-height:90vh;
-  overflow-y:auto;
+  background:#fff;border-radius:var(--radius-lg);
+  max-width:500px;width:100%;overflow:hidden;
+  box-shadow:0 40px 100px rgba(0,0,0,.5);
+  animation:modalIn .35s cubic-bezier(.175,.885,.32,1.275);
+  max-height:92vh;overflow-y:auto;
 }
-@keyframes modalIn{from{opacity:0;transform:scale(.9) translateY(20px)}to{opacity:1;transform:none}}
-
+@keyframes modalIn{from{opacity:0;transform:scale(.88) translateY(24px)}to{opacity:1;transform:none}}
 .modal-head{
-  background:var(--warm);
-  padding:20px 24px;
-  display:flex;align-items:center;justify-content:space-between;
+  background:linear-gradient(135deg,var(--warm),var(--warm3));
+  padding:22px 26px;display:flex;align-items:center;justify-content:space-between;
   position:sticky;top:0;z-index:10;
 }
-.modal-head h3{
-  font-family:'Playfair Display',serif;
-  color:var(--gold-light);font-size:20px;
-}
+.modal-head h3{font-family:'Playfair Display',serif;color:var(--gold-light);font-size:21px;display:flex;align-items:center;gap:10px}
 .modal-close{
   background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
-  color:rgba(255,255,255,.8);font-size:20px;
-  cursor:pointer;line-height:1;transition:.2s;
-  width:36px;height:36px;border-radius:50%;
+  color:rgba(255,255,255,.8);cursor:pointer;transition:.2s;
+  width:38px;height:38px;border-radius:50%;font-size:20px;
   display:flex;align-items:center;justify-content:center;
 }
 .modal-close:hover{background:var(--red);color:#fff;border-color:var(--red)}
-
-.modal-body{padding:24px}
-
-.form-group{margin-bottom:16px}
-label{
-  display:block;font-weight:700;font-size:13px;
-  color:var(--warm);margin-bottom:6px;letter-spacing:.5px;
-  text-transform:uppercase;
-}
+.modal-body{padding:26px}
+.form-group{margin-bottom:18px}
+label{display:block;font-weight:800;font-size:12px;color:var(--warm);margin-bottom:7px;letter-spacing:.7px;text-transform:uppercase}
 input,textarea,select{
-  width:100%;border:2px solid #e8ddc8;border-radius:10px;
-  padding:10px 14px;font-size:14px;font-family:'Nunito',sans-serif;
-  color:var(--dark);background:var(--cream);
-  transition:.2s;outline:none;
+  width:100%;border:2px solid #e8ddc8;border-radius:var(--radius-sm);
+  padding:12px 16px;font-size:14px;font-family:'Nunito',sans-serif;
+  color:var(--dark);background:var(--cream);transition:.2s;outline:none;
+  appearance:none;
 }
-input:focus,textarea:focus,select:focus{border-color:var(--gold)}
-input.error{border-color:var(--red);}
+input:focus,textarea:focus,select:focus{border-color:var(--gold);background:#fff;box-shadow:0 0 0 3px rgba(212,160,23,.12)}
+input.error{border-color:var(--red);background:#fff5f5}
 textarea{resize:vertical;min-height:80px}
-
-.error-msg{
-  font-size:12px;color:var(--red);
-  margin-top:4px;display:none;
-}
+.error-msg{font-size:12px;color:var(--red);margin-top:5px;display:none;font-weight:700}
 .error-msg.show{display:block}
 
-.order-summary{
-  background:var(--cream2);border-radius:12px;
-  padding:14px 16px;margin-bottom:16px;
-  border:1px solid rgba(212,160,23,.2);
+.input-icon{position:relative}
+.input-icon input{padding-left:44px}
+.input-icon .icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:18px;pointer-events:none}
+
+.delivery-mode-btns{display:flex;gap:10px}
+.mode-btn{
+  flex:1;border:2px solid rgba(44,18,0,.15);background:#fff;
+  border-radius:var(--radius-sm);padding:12px 10px;cursor:pointer;
+  font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;
+  color:#888;transition:all .2s;text-align:center;
 }
-.order-summary h4{
-  font-family:'Playfair Display',serif;
-  font-size:15px;color:var(--warm);margin-bottom:8px;
-}
-.summary-item{
-  display:flex;justify-content:space-between;
-  font-size:13px;color:#555;padding:3px 0;
-}
-.summary-total{
-  display:flex;justify-content:space-between;
-  font-weight:900;font-size:15px;color:var(--dark);
-  margin-top:8px;padding-top:8px;
-  border-top:1.5px solid rgba(212,160,23,.3);
+.mode-btn.active{border-color:var(--warm);background:var(--warm);color:var(--gold-light)}
+.mode-btn:hover:not(.active){border-color:var(--warm3);color:var(--warm3)}
+
+.order-summary{background:var(--cream2);border-radius:var(--radius-sm);padding:16px 18px;margin-bottom:20px;border:1px solid rgba(212,160,23,.2)}
+.order-summary h4{font-family:'Playfair Display',serif;font-size:16px;color:var(--warm);margin-bottom:10px}
+.summary-item{display:flex;justify-content:space-between;font-size:13px;color:#555;padding:4px 0;align-items:center}
+.summary-item-thumb{width:28px;height:28px;border-radius:6px;object-fit:cover;flex-shrink:0;border:1px solid rgba(212,160,23,.2);margin-right:6px;vertical-align:middle}
+.summary-total{display:flex;justify-content:space-between;font-weight:900;font-size:16px;color:var(--dark);margin-top:10px;padding-top:10px;border-top:1.5px solid rgba(212,160,23,.3)}
+
+.delivery-note{
+  background:rgba(37,211,102,.07);border:1px solid rgba(37,211,102,.2);
+  border-radius:var(--radius-sm);padding:12px 16px;font-size:13px;color:#2a7a4a;
+  font-weight:700;margin-bottom:18px;display:flex;align-items:flex-start;gap:10px;line-height:1.5;
 }
 
-/* ── WHATSAPP BUTTON ── */
 .confirm-btn{
-  width:100%;
-  background:var(--whatsapp);color:#fff;border:none;border-radius:12px;
-  padding:15px;font-weight:900;font-size:15px;
-  cursor:pointer;font-family:'Nunito',sans-serif;
+  width:100%;background:var(--whatsapp);color:#fff;border:none;border-radius:var(--radius-sm);
+  padding:16px;font-weight:900;font-size:15px;cursor:pointer;font-family:'Nunito',sans-serif;
   transition:.2s;display:flex;align-items:center;justify-content:center;gap:10px;
-  box-shadow:0 4px 16px rgba(37,211,102,.35);
+  box-shadow:0 4px 18px rgba(37,211,102,.35);
 }
-.confirm-btn:hover{background:#1ebe5d;transform:translateY(-1px);box-shadow:0 8px 24px rgba(37,211,102,.45)}
-.confirm-btn:active{transform:scale(.98)}
-
-.whatsapp-icon{
-  width:22px;height:22px;flex-shrink:0;
-}
+.confirm-btn:hover{background:var(--whatsapp2);transform:translateY(-2px);box-shadow:0 10px 28px rgba(37,211,102,.45)}
 
 /* ── SUCCESS ── */
-.success-screen{
-  display:none;
-  text-align:center;padding:40px 24px;
-}
+.success-screen{display:none;text-align:center;padding:48px 28px}
 .success-screen.show{display:block}
-.success-icon{font-size:64px;margin-bottom:16px;animation:pop .5s ease}
-@keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.2)}100%{transform:scale(1)}}
-.success-screen h3{
-  font-family:'Playfair Display',serif;
-  font-size:24px;color:var(--whatsapp);margin-bottom:8px;
-}
-.success-screen p{font-size:14px;color:#666;line-height:1.6}
+.success-icon{font-size:72px;margin-bottom:20px;animation:popIn .5s cubic-bezier(.175,.885,.32,1.275)}
+@keyframes popIn{0%{transform:scale(0) rotate(-15deg)}80%{transform:scale(1.12) rotate(3deg)}100%{transform:scale(1) rotate(0)}}
+.success-screen h3{font-family:'Playfair Display',serif;font-size:26px;color:var(--whatsapp);margin-bottom:10px}
+.success-screen p{font-size:14px;color:#666;line-height:1.7}
 .success-ref{
-  display:inline-block;
-  background:var(--cream2);border:1.5px solid var(--gold);
-  border-radius:10px;padding:8px 20px;
-  font-weight:800;font-size:16px;color:var(--warm);
-  margin:14px 0;letter-spacing:2px;
+  display:inline-block;background:var(--cream2);border:2px solid var(--gold);
+  border-radius:10px;padding:10px 24px;font-weight:900;font-size:18px;color:var(--warm);
+  margin:16px 0;letter-spacing:3px;font-family:'Playfair Display',serif;
 }
 .whatsapp-redirect-btn{
-  display:inline-flex;align-items:center;gap:8px;
-  background:var(--whatsapp);color:#fff;border:none;
-  border-radius:10px;padding:13px 28px;
-  font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;
-  font-size:14px;margin-top:8px;transition:.2s;
-  text-decoration:none;
-  box-shadow:0 4px 14px rgba(37,211,102,.3);
+  display:inline-flex;align-items:center;gap:8px;background:var(--whatsapp);color:#fff;
+  border:none;border-radius:10px;padding:14px 30px;font-weight:800;cursor:pointer;
+  font-family:'Nunito',sans-serif;font-size:14px;margin-top:10px;transition:.2s;
+  text-decoration:none;box-shadow:0 4px 16px rgba(37,211,102,.3);
 }
-.whatsapp-redirect-btn:hover{background:#1ebe5d;transform:translateY(-1px)}
-
-.close-success{
-  display:block;
-  background:transparent;color:#aaa;border:none;
-  font-weight:600;cursor:pointer;font-family:'Nunito',sans-serif;
-  font-size:13px;margin-top:12px;transition:.2s;
-  text-decoration:underline;
-}
+.whatsapp-redirect-btn:hover{background:var(--whatsapp2);transform:translateY(-1px)}
+.close-success{display:block;background:transparent;color:#bbb;border:none;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;font-size:13px;margin-top:14px;transition:.2s;text-decoration:underline}
 .close-success:hover{color:var(--dark)}
 
-/* ── DELIVERY INFO ── */
-.delivery-info{
-  background:rgba(37,211,102,.08);
-  border:1px solid rgba(37,211,102,.2);
-  border-radius:10px;padding:10px 14px;
-  font-size:13px;color:#2a7a4a;font-weight:600;
-  margin-bottom:16px;
-  display:flex;align-items:center;gap:8px;
+/* ── HOURS BADGE ── */
+.hours-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(39,174,96,.12);border:1px solid rgba(39,174,96,.3);
+  border-radius:50px;padding:7px 18px;font-size:13px;font-weight:700;color:#22924a;
+  margin-top:14px;
 }
+.hours-badge .dot{width:8px;height:8px;border-radius:50%;background:#22924a;animation:pulse 1.5s infinite}
 
 /* ── FOOTER ── */
-footer{
-  background:var(--dark);
-  border-top:3px solid var(--gold);
-  padding:24px;text-align:center;
+footer{background:var(--dark);border-top:3px solid rgba(212,160,23,.3);padding:0}
+.footer-stripe{height:6px;background:repeating-linear-gradient(90deg,var(--gold) 0,var(--gold) 12px,var(--red) 12px,var(--red) 24px,var(--orange) 24px,var(--orange) 36px)}
+.footer-inner{
+  max-width:1000px;margin:0 auto;padding:40px 24px 30px;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:32px;
 }
-.footer-stripe{
-  height:6px;
-  background:repeating-linear-gradient(90deg,
-    var(--gold) 0,var(--gold) 12px,
-    var(--red) 12px,var(--red) 24px,
-    var(--orange) 24px,var(--orange) 36px);
-  margin-bottom:20px;
-}
-footer p{color:rgba(255,255,255,.5);font-size:13px}
-footer strong{color:var(--gold)}
-/* --- SHELBY DESIGN UI IMPROVEMENTS --- */
+.footer-brand h3{font-family:'Playfair Display',serif;color:var(--gold-light);font-size:22px;margin-bottom:8px}
+.footer-brand p{color:rgba(255,255,255,.5);font-size:13px;line-height:1.7}
+.footer-links h4{color:var(--gold);font-size:12px;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;font-weight:800}
+.footer-links a{display:block;color:rgba(255,255,255,.5);font-size:13px;font-weight:600;text-decoration:none;margin-bottom:6px;transition:.2s}
+.footer-links a:hover{color:var(--gold-light)}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.08);padding:16px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.footer-bottom p{color:rgba(255,255,255,.35);font-size:12px}
+.footer-bottom strong{color:var(--gold)}
 
-/* 1. Cart badge bounce effect */
-@keyframes cartBounce {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.6); }
-  100% { transform: scale(1); }
+/* ── BACK TO TOP ── */
+.back-top{
+  position:fixed;bottom:90px;right:24px;z-index:300;
+  background:var(--warm);border:1.5px solid rgba(212,160,23,.4);
+  color:var(--gold-light);border-radius:50%;width:44px;height:44px;
+  cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center;
+  box-shadow:var(--shadow);transition:all .25s;opacity:0;visibility:hidden;
+  font-family:'Nunito',sans-serif;
 }
+.back-top.show{opacity:1;visibility:visible}
+.back-top:hover{background:var(--gold);color:var(--dark);transform:translateY(-3px)}
 
-.cart-count.bump {
-  animation: cartBounce 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  background: var(--gold-light) !important;
-  color: var(--dark) !important;
+/* ── RESPONSIVE ── */
+@media(max-width:880px){
+  .nav-center{display:none}
+  .mobile-cart-fab{display:flex}
+  .cart-col{display:none}
+  .main-layout{padding-bottom:100px}
+  .hero-orb{display:none}
 }
-
-/* 2. Smooth fade-in for menu items */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.item-card {
-  animation: fadeInUp 0.6s ease forwards;
-}
-
-/* 3. Button click feedback */
-.add-btn:active {
-  transform: scale(0.85);
-  background: var(--gold-light) !important;
-}
-
-/* 4. Category hover effect */
-.cat-header {
-  transition: transform 0.3s ease;
-}
-.cat-header:hover {
-  transform: translateX(10px);
-}
-
-/* ── Responsive ── */
 @media(max-width:600px){
   .items-grid{grid-template-columns:repeat(2,1fr)}
-  .hero h1{font-size:36px}
-  .modal{border-radius:16px 16px 0 0;max-height:95vh;}
-  .modal-overlay{align-items:flex-end;padding:0;}
+  .hero h1{font-size:46px}
+  .modal{border-radius:var(--radius-lg) var(--radius-lg) 0 0;max-height:95vh}
+  .modal-overlay{align-items:flex-end;padding:0}
+  .footer-inner{grid-template-columns:1fr}
 }
+@media(max-width:400px){
+  .items-grid{grid-template-columns:1fr}
+}
+
+
+/* ── FILTER BUTTONS ── */
+.filter-btn{
+  background:transparent;border:1.5px solid rgba(44,18,0,.18);
+  color:var(--warm3);border-radius:50px;
+  padding:6px 14px;font-size:12px;font-weight:800;
+  cursor:pointer;transition:all .2s;font-family:'Nunito',sans-serif;
+  white-space:nowrap;
+}
+.filter-btn:hover{background:var(--cream3);border-color:var(--gold)}
+.filter-btn.active{background:var(--warm);color:var(--gold-light);border-color:var(--warm)}
+
+/* ── MIN ORDER WARNING ── */
+.min-order-warn{
+  display:none;background:rgba(192,57,43,.08);border:1.5px solid rgba(192,57,43,.25);
+  border-radius:8px;padding:10px 14px;font-size:12px;font-weight:800;color:var(--red);
+  margin-bottom:12px;text-align:center;
+}
+.min-order-warn.show{display:block}
+
+
+/* ── FAVORIS ── */
+.fav-btn{
+  position:absolute;top:8px;right:8px;z-index:3;
+  background:rgba(255,255,255,.85);border:none;border-radius:50%;
+  width:30px;height:30px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:15px;transition:all .2s;
+  backdrop-filter:blur(4px);box-shadow:0 2px 8px rgba(0,0,0,.15);
+}
+.fav-btn:hover{transform:scale(1.2)}
+.fav-btn.active{background:rgba(255,220,220,.95)}
+
+.fav-filter-bar{
+  display:flex;align-items:center;gap:8px;
+  background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.2);
+  border-radius:10px;padding:10px 14px;margin-bottom:16px;
+  font-size:13px;font-weight:700;color:var(--warm3);
+  cursor:pointer;transition:all .2s;user-select:none;
+}
+.fav-filter-bar:hover{background:rgba(212,160,23,.14)}
+.fav-filter-bar.active{background:var(--warm);color:var(--gold-light);border-color:var(--warm)}
+
+/* ── CHATBOT ── */
+.chat-fab{
+  position:fixed;bottom:84px;left:20px;z-index:400;
+  background:linear-gradient(135deg,#6C3FE0,#9B5DE5);
+  color:#fff;border:none;border-radius:50px;
+  padding:13px 20px;font-weight:900;font-size:14px;
+  cursor:pointer;box-shadow:0 8px 28px rgba(108,63,224,.45);
+  font-family:'Nunito',sans-serif;transition:all .25s;
+  display:flex;align-items:center;gap:8px;
+}
+.chat-fab:hover{transform:scale(1.04);box-shadow:0 12px 36px rgba(108,63,224,.55)}
+.chat-fab .chat-fab-dot{
+  width:8px;height:8px;border-radius:50%;background:#4eff91;
+  animation:pulse 1.5s infinite;flex-shrink:0;
+}
+
+.chat-panel{
+  position:fixed;bottom:148px;left:20px;z-index:500;
+  width:min(360px, calc(100vw - 40px));
+  background:#fff;border-radius:20px;
+  box-shadow:0 20px 60px rgba(0,0,0,.25);
+  border:1.5px solid rgba(108,63,224,.2);
+  display:flex;flex-direction:column;
+  overflow:hidden;
+  max-height:min(480px, 60vh);
+  transform:scale(.85) translateY(20px);opacity:0;pointer-events:none;
+  transition:all .3s cubic-bezier(.175,.885,.32,1.275);
+}
+.chat-panel.open{transform:scale(1) translateY(0);opacity:1;pointer-events:all}
+
+.chat-head{
+  background:linear-gradient(135deg,#6C3FE0,#9B5DE5);
+  padding:14px 18px;display:flex;align-items:center;gap:10px;flex-shrink:0;
+}
+.chat-head-avatar{
+  width:36px;height:36px;border-radius:50%;
+  background:rgba(255,255,255,.2);
+  display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;
+}
+.chat-head-info{flex:1}
+.chat-head-name{font-weight:900;font-size:14px;color:#fff}
+.chat-head-status{font-size:11px;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:4px}
+.chat-head-status::before{content:'';width:6px;height:6px;border-radius:50%;background:#4eff91;display:inline-block}
+.chat-close-btn{background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:50%;
+  width:28px;height:28px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:.2s}
+.chat-close-btn:hover{background:rgba(255,255,255,.25)}
+
+.chat-messages{
+  flex:1;overflow-y:auto;padding:14px;
+  display:flex;flex-direction:column;gap:10px;
+  scrollbar-width:thin;scrollbar-color:rgba(108,63,224,.2) transparent;
+}
+.chat-messages::-webkit-scrollbar{width:3px}
+.chat-messages::-webkit-scrollbar-thumb{background:rgba(108,63,224,.3);border-radius:4px}
+
+.chat-msg{
+  max-width:82%;display:flex;flex-direction:column;gap:3px;
+  animation:msgIn .25s ease;
+}
+@keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.chat-msg.bot{align-self:flex-start}
+.chat-msg.user{align-self:flex-end}
+.chat-bubble{
+  padding:9px 13px;border-radius:16px;font-size:13px;line-height:1.5;font-weight:600;
+}
+.chat-msg.bot .chat-bubble{background:#f3f0ff;color:#2d1a5e;border-bottom-left-radius:4px}
+.chat-msg.user .chat-bubble{background:linear-gradient(135deg,#6C3FE0,#9B5DE5);color:#fff;border-bottom-right-radius:4px}
+.chat-msg-time{font-size:10px;color:#bbb;padding:0 4px}
+.chat-msg.user .chat-msg-time{text-align:right}
+
+.chat-typing{align-self:flex-start;display:none}
+.chat-typing.show{display:flex}
+.chat-typing .chat-bubble{display:flex;gap:4px;align-items:center;padding:10px 14px}
+.typing-dot{width:7px;height:7px;border-radius:50%;background:#9B5DE5;animation:typingBounce 1.2s infinite}
+.typing-dot:nth-child(2){animation-delay:.2s}
+.typing-dot:nth-child(3){animation-delay:.4s}
+@keyframes typingBounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+
+.chat-quick-btns{
+  display:flex;gap:6px;flex-wrap:wrap;padding:0 14px 10px;flex-shrink:0;
+}
+.chat-quick-btn{
+  background:#f3f0ff;border:1px solid rgba(108,63,224,.2);color:#6C3FE0;
+  border-radius:50px;padding:5px 12px;font-size:11px;font-weight:800;
+  cursor:pointer;transition:all .15s;font-family:'Nunito',sans-serif;white-space:nowrap;
+}
+.chat-quick-btn:hover{background:#6C3FE0;color:#fff}
+
+.chat-input-area{
+  display:flex;gap:8px;padding:10px 14px;border-top:1px solid #f0e8ff;flex-shrink:0;
+}
+.chat-input{
+  flex:1;border:1.5px solid rgba(108,63,224,.2);border-radius:50px;
+  padding:9px 14px;font-size:13px;font-family:'Nunito',sans-serif;
+  color:var(--dark);outline:none;transition:.2s;background:#faf8ff;
+}
+.chat-input:focus{border-color:#6C3FE0;background:#fff}
+.chat-send-btn{
+  background:linear-gradient(135deg,#6C3FE0,#9B5DE5);
+  border:none;border-radius:50%;width:36px;height:36px;flex-shrink:0;
+  cursor:pointer;color:#fff;font-size:16px;
+  display:flex;align-items:center;justify-content:center;transition:.2s;
+}
+.chat-send-btn:hover{transform:scale(1.08)}
+.chat-send-btn:disabled{opacity:.5;cursor:not-allowed}
+
+
+/* ── DARK MODE ── */
+body.dark{
+  --cream:#1a1008; --cream2:#221408; --cream3:#2a1a0a;
+  --dark:#f5e6c8; --warm:#d4a017;
+  background:var(--cream);color:var(--dark);
+}
+body.dark .item-card{background:#2a1a0a;border-color:rgba(212,160,23,.2)}
+body.dark .item-name{color:var(--gold-light)}
+body.dark .item-tag{background:#3b2500;color:var(--gold)}
+body.dark input,body.dark textarea,body.dark select{background:#2a1a0a;color:var(--gold-light);border-color:rgba(212,160,23,.3)}
+body.dark .cart-box,body.dark .modal{background:#2a1a0a}
+body.dark .testimonial-card{background:#2a1a0a;border-color:rgba(212,160,23,.15)}
+body.dark .testimonial-text{color:#aaa}
+body.dark .gallery-section{background:#1e1208}
+body.dark .testimonials-section{background:#1a1008}
+body.dark .chat-input{background:#2a1a0a;color:var(--gold-light)}
+body.dark .chat-msg.bot .chat-bubble{background:#2a1a0a;color:var(--gold-light)}
+body.dark .order-summary{background:#2a1a0a}
+body.dark .fav-btn{background:rgba(42,26,10,.85)}
+.dark-toggle{
+  background:transparent;border:1.5px solid rgba(212,160,23,.3);
+  color:rgba(255,255,255,.6);border-radius:8px;
+  width:36px;height:36px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:16px;
+  transition:all .2s;
+}
+.dark-toggle:hover{border-color:var(--gold);color:var(--gold-light)}
+
+/* ── LANGUE TOGGLE ── */
+.lang-toggle{
+  background:transparent;border:1.5px solid rgba(212,160,23,.3);
+  color:rgba(255,255,255,.6);border-radius:8px;
+  padding:0 10px;height:36px;cursor:pointer;
+  font-size:11px;font-weight:900;letter-spacing:.5px;
+  display:flex;align-items:center;gap:4px;
+  transition:all .2s;font-family:'Nunito',sans-serif;
+}
+.lang-toggle:hover{border-color:var(--gold);color:var(--gold-light)}
+
+/* ── POPUP PROMO ── */
+.promo-popup{
+  position:fixed;inset:0;z-index:900;
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;pointer-events:none;opacity:0;
+  transition:opacity .4s ease;
+}
+.promo-popup.show{opacity:1;pointer-events:all}
+.promo-popup-bg{position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px)}
+.promo-popup-box{
+  position:relative;z-index:1;
+  background:#fff;border-radius:24px;padding:36px 28px;
+  max-width:340px;width:100%;text-align:center;
+  box-shadow:0 40px 80px rgba(0,0,0,.35);
+  animation:popupIn .5s cubic-bezier(.175,.885,.32,1.275);
+}
+@keyframes popupIn{from{transform:scale(.7) translateY(30px);opacity:0}to{transform:none;opacity:1}}
+.promo-popup-icon{font-size:60px;margin-bottom:12px}
+.promo-popup-title{font-family:'Playfair Display',serif;font-size:24px;color:var(--warm);font-weight:900;margin-bottom:8px}
+.promo-popup-sub{font-size:14px;color:#888;line-height:1.6;margin-bottom:20px}
+.promo-code{
+  display:inline-block;background:var(--cream2);border:2px dashed var(--gold);
+  border-radius:10px;padding:10px 24px;font-weight:900;font-size:20px;
+  color:var(--warm);letter-spacing:4px;font-family:'Playfair Display',serif;margin-bottom:20px;
+  cursor:pointer;transition:.2s;
+}
+.promo-code:hover{background:var(--gold-pale)}
+.promo-popup-close{
+  display:block;background:linear-gradient(135deg,var(--gold),var(--orange));
+  color:var(--dark);border:none;border-radius:50px;
+  padding:13px 28px;font-weight:900;font-size:14px;cursor:pointer;
+  font-family:'Nunito',sans-serif;width:100%;margin-bottom:10px;transition:.2s;
+}
+.promo-popup-close:hover{transform:translateY(-2px)}
+.promo-popup-skip{background:transparent;border:none;color:#bbb;font-size:12px;cursor:pointer;font-family:'Nunito',sans-serif;text-decoration:underline}
+
+/* ── UPSELL IN CART ── */
+.cart-upsell{
+  padding:12px 16px;background:var(--cream2);border-top:1px dashed rgba(212,160,23,.3);
+}
+.cart-upsell-title{font-size:11px;font-weight:900;color:var(--warm3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.cart-upsell-items{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.cart-upsell-items::-webkit-scrollbar{display:none}
+.cart-upsell-item{
+  flex-shrink:0;background:#fff;border:1px solid rgba(212,160,23,.2);border-radius:10px;
+  padding:7px 10px;cursor:pointer;transition:.2s;text-align:center;min-width:80px;
+}
+.cart-upsell-item:hover{border-color:var(--gold);transform:translateY(-2px)}
+.cart-upsell-item span{display:block;font-size:20px}
+.cart-upsell-item b{display:block;font-size:10px;font-weight:800;color:var(--warm);margin-top:2px}
+.cart-upsell-item small{display:block;font-size:10px;color:var(--red);font-weight:700}
+
+/* ── FREE DELIVERY BANNER ── */
+.free-delivery-bar{
+  background:linear-gradient(90deg,rgba(39,174,96,.12),rgba(39,174,96,.08));
+  border:1px solid rgba(39,174,96,.25);border-radius:8px;
+  padding:9px 14px;font-size:12px;font-weight:800;color:#22924a;
+  margin-bottom:12px;display:flex;align-items:center;gap:8px;
+  transition:all .3s;
+}
+.free-delivery-progress{
+  flex:1;height:4px;background:rgba(39,174,96,.2);border-radius:4px;overflow:hidden;
+}
+.free-delivery-fill{height:100%;background:#27AE60;border-radius:4px;transition:width .4s ease}
+
+/* ── HISTORIQUE ── */
+.historique-overlay{
+  display:none;position:fixed;inset:0;z-index:700;
+  background:rgba(0,0,0,.7);backdrop-filter:blur(6px);
+  align-items:center;justify-content:center;padding:20px;
+}
+.historique-overlay.open{display:flex}
+.historique-box{
+  background:#fff;border-radius:var(--radius-lg);max-width:460px;width:100%;
+  max-height:88vh;overflow-y:auto;box-shadow:0 40px 100px rgba(0,0,0,.4);
+  animation:modalIn .35s cubic-bezier(.175,.885,.32,1.275);
+}
+.hist-head{background:linear-gradient(135deg,var(--warm),var(--warm3));padding:20px 24px;
+  display:flex;align-items:center;justify-content:space-between;position:sticky;top:0}
+.hist-head h3{font-family:'Playfair Display',serif;color:var(--gold-light);font-size:19px;display:flex;align-items:center;gap:8px}
+.hist-body{padding:20px}
+.hist-item{background:var(--cream2);border-radius:12px;padding:14px 16px;margin-bottom:10px;border:1px solid rgba(212,160,23,.15)}
+.hist-item-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.hist-ref{font-weight:900;font-size:13px;color:var(--warm);font-family:'Playfair Display',serif}
+.hist-date{font-size:11px;color:#aaa;font-weight:600}
+.hist-items-list{font-size:12px;color:#666;line-height:1.8;font-weight:600}
+.hist-total{font-weight:900;font-size:14px;color:var(--red);margin-top:6px}
+.hist-empty{text-align:center;padding:40px 20px;color:#bbb;font-size:14px}
+
+/* ── ADMIN PANEL ── */
+.admin-overlay{
+  display:none;position:fixed;inset:0;z-index:999;
+  background:rgba(0,0,0,.85);backdrop-filter:blur(8px);
+  align-items:center;justify-content:center;padding:20px;
+}
+.admin-overlay.open{display:flex}
+.admin-box{
+  background:#1a1008;border:2px solid var(--gold);border-radius:var(--radius-lg);
+  max-width:500px;width:100%;max-height:90vh;overflow-y:auto;
+  box-shadow:0 40px 100px rgba(0,0,0,.6);
+  animation:modalIn .35s cubic-bezier(.175,.885,.32,1.275);
+}
+.admin-head{background:linear-gradient(135deg,#2a0a0a,#3b1a00);padding:20px 24px;
+  display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;
+  border-bottom:1px solid rgba(212,160,23,.3)}
+.admin-head h3{font-family:'Playfair Display',serif;color:var(--gold-light);font-size:19px;display:flex;align-items:center;gap:8px}
+.admin-body{padding:20px}
+.admin-section{margin-bottom:24px}
+.admin-section h4{color:var(--gold);font-size:12px;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;font-weight:800;font-family:'Nunito',sans-serif}
+.admin-item-row{
+  display:flex;align-items:center;gap:10px;padding:10px 14px;
+  background:rgba(255,255,255,.04);border-radius:10px;margin-bottom:6px;
+  border:1px solid rgba(212,160,23,.1);
+}
+.admin-item-emoji{font-size:22px;flex-shrink:0}
+.admin-item-name{flex:1;font-weight:700;color:rgba(255,255,255,.8);font-size:13px}
+.admin-item-price{font-size:12px;color:var(--gold);font-weight:800}
+.admin-toggle{
+  background:var(--green);border:none;border-radius:50px;
+  padding:4px 12px;font-size:11px;font-weight:900;cursor:pointer;
+  color:#fff;transition:.2s;font-family:'Nunito',sans-serif;
+}
+.admin-toggle.off{background:var(--red)}
+.admin-toggle:hover{opacity:.85}
+.admin-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.admin-stat{background:rgba(255,255,255,.04);border-radius:10px;padding:14px;text-align:center;border:1px solid rgba(212,160,23,.1)}
+.admin-stat-num{font-family:'Playfair Display',serif;font-size:22px;color:var(--gold-light);font-weight:900}
+.admin-stat-label{font-size:11px;color:rgba(255,255,255,.5);margin-top:4px;font-weight:600}
+.admin-pwd-form{display:flex;flex-direction:column;align-items:center;gap:14px;padding:40px 20px;text-align:center}
+.admin-pwd-form p{color:rgba(255,255,255,.6);font-size:14px}
+.admin-pwd-input{
+  width:100%;max-width:260px;background:rgba(255,255,255,.07);
+  border:1.5px solid rgba(212,160,23,.3);border-radius:10px;
+  padding:12px 16px;color:#fff;font-family:'Nunito',sans-serif;
+  font-size:16px;text-align:center;letter-spacing:4px;outline:none;
+}
+.admin-pwd-input:focus{border-color:var(--gold)}
+.admin-login-btn{
+  background:linear-gradient(135deg,var(--gold),var(--orange));
+  border:none;border-radius:50px;padding:12px 32px;font-weight:900;
+  font-size:14px;cursor:pointer;font-family:'Nunito',sans-serif;color:var(--dark);
+}
+.admin-pwd-error{color:var(--red);font-size:12px;font-weight:700}
+
+/* ── AVIS FORM ── */
+.avis-form-section{
+  max-width:700px;margin:0 auto;padding:0 20px 20px;
+}
+.avis-form-box{
+  background:#fff;border-radius:var(--radius);padding:22px;
+  border:1.5px solid rgba(212,160,23,.15);box-shadow:var(--shadow-sm);
+  margin-top:20px;
+}
+.star-rating{display:flex;gap:6px;margin-bottom:12px}
+.star-btn{background:none;border:none;font-size:28px;cursor:pointer;transition:.1s;line-height:1;opacity:.3}
+.star-btn.active{opacity:1}
+.star-btn:hover{transform:scale(1.2)}
+
+/* ── VIEW COUNTER & LAST ORDER BADGE ── */
+.item-meta-bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:3px}
+.view-counter{font-size:10px;color:#aaa;font-weight:700;display:flex;align-items:center;gap:3px}
+.last-order-badge{font-size:10px;color:var(--green);font-weight:800;background:rgba(39,174,96,.08);
+  border-radius:4px;padding:1px 6px}
+
+/* ── SHIMMER CARDS ── */
+.item-card.loading .item-img{animation:skeleton-loading 1.4s infinite;background-size:200% 100%}
+
+/* ── CART SHAKE ── */
+@keyframes cartShake{0%,100%{transform:none}15%{transform:translateX(-6px)rotate(-2deg)}30%{transform:translateX(6px)rotate(2deg)}45%{transform:translateX(-4px)}60%{transform:translateX(4px)}75%{transform:translateX(-2px)}}
+.cart-btn.shake{animation:cartShake .5s ease}
+
+/* ── SKELETON LOADER ── */
+.skeleton{background:linear-gradient(90deg,#f0e8d8 25%,#faf3e8 50%,#f0e8d8 75%);background-size:200% 100%;animation:skeleton-loading 1.4s infinite;border-radius:8px}
+@keyframes skeleton-loading{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ── SECTION SEPARATOR ── */
+.wave-sep{width:100%;line-height:0;background:var(--cream)}
+.wave-sep svg{display:block}
 </style>
 </head>
 <body>
 
+<!-- LOADING SCREEN -->
+<div id="loadingScreen">
+  <svg class="loading-logo" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="55" cy="55" r="52" fill="#1A0A00" stroke="#D4A017" stroke-width="2.5"/>
+    <ellipse cx="55" cy="62" rx="30" ry="7" fill="none" stroke="#D4A017" stroke-width="2"/>
+    <ellipse cx="55" cy="62" rx="22" ry="4.5" fill="#3B1A00" stroke="#F5C842" stroke-width="1.5"/>
+    <line x1="40" y1="30" x2="40" y2="58" stroke="#F5C842" stroke-width="2.2" stroke-linecap="round"/>
+    <line x1="37" y1="30" x2="37" y2="40" stroke="#F5C842" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="43" y1="30" x2="43" y2="40" stroke="#F5C842" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="70" y1="30" x2="70" y2="58" stroke="#F5C842" stroke-width="2.2" stroke-linecap="round"/>
+    <path d="M70 30 Q74 34 72 42 L70 42 Z" fill="#F5C842"/>
+    <polygon points="55,45 56.5,50 61,50 57.5,53 58.8,58 55,55.5 51.2,58 52.5,53 49,50 53.5,50" fill="#D4A017"/>
+  </svg>
+  <div class="loading-text">Bienvenue chez Kolé...</div>
+  <div class="loading-bar"><div class="loading-fill"></div></div>
+</div>
+
+<!-- PROMO BANNER -->
+<div class="promo-bar">
+  🎉 <span>Commande min. 500 FCFA</span> · Livraison disponible à Kédougou · <span>Ouvert 7j/7</span> 🕐
+</div>
+
 <!-- NAVBAR -->
-<nav>
-  <a class="nav-logo" href="#">
+<nav id="mainNav">
+  <a class="nav-logo" href="javascript:void(0)" onclick="return false">
     <svg viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
       <circle cx="55" cy="55" r="52" fill="#1A0A00" stroke="#D4A017" stroke-width="2.5"/>
       <ellipse cx="55" cy="62" rx="30" ry="7" fill="none" stroke="#D4A017" stroke-width="2"/>
@@ -544,56 +1153,168 @@ footer strong{color:var(--gold)}
       <path d="M70 30 Q74 34 72 42 L70 42 Z" fill="#F5C842"/>
       <polygon points="55,45 56.5,50 61,50 57.5,53 58.8,58 55,55.5 51.2,58 52.5,53 49,50 53.5,50" fill="#D4A017"/>
     </svg>
-    <div class="nav-logo-text">
-      Chez Kolé
-      <small>Kédougou</small>
-    </div>
+    <div class="nav-logo-text">Chez Kolé<small>Kédougou · Sénégal</small></div>
   </a>
+  <div class="nav-center">
+    <a class="nav-link" href="javascript:void(0)" onclick="event.preventDefault();var el=document.getElementById('menu');if(el)el.scrollIntoView({behavior:'smooth'})">Menu</a>
+    <a class="nav-link" href="javascript:void(0)" onclick="event.preventDefault();document.getElementById('info').scrollIntoView({behavior:'smooth'})">Infos</a>
+    <a class="nav-link" href="javascript:void(0)" onclick="event.preventDefault();var el=document.getElementById('avis');if(el)el.scrollIntoView({behavior:'smooth'})">Avis</a>
+    <a class="nav-link" href="javascript:void(0)" onclick="event.preventDefault();var el=document.getElementById('contact');if(el)el.scrollIntoView({behavior:'smooth'})">Contact</a>
+  </div>
   <div class="nav-actions">
-    <button class="cart-btn" onclick="openCart()">
-      🛒 Mon panier
+    <button class="lang-toggle" onclick="toggleLang()" id="langBtn" title="Langue" aria-label="Changer langue">🇫🇷 FR</button>
+    <button class="dark-toggle" onclick="toggleDark()" id="darkBtn" title="Mode sombre" aria-label="Mode sombre">🌙</button>
+    <button class="search-btn" onclick="openHistorique()" title="Mes commandes" aria-label="Historique" style="font-size:15px">📋</button>
+    <button class="search-btn" onclick="shareApp()" title="Partager" aria-label="Partager" style="font-size:15px">🔗</button>
+    <button class="search-btn" onclick="toggleSearch()" title="Rechercher" aria-label="Rechercher">🔍</button>
+    <button class="cart-btn" onclick="openCart()" aria-label="Ouvrir le panier">
+      🛒 <span data-i18n="panier">Panier</span>
       <span class="cart-count" id="cartCount">0</span>
     </button>
   </div>
 </nav>
 
-<!-- HERO -->
-<div class="hero">
-  <div class="hero-stripe"></div>
-  <svg class="hero-logo" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="55" cy="55" r="52" fill="#1A0A00" stroke="#D4A017" stroke-width="2.5"/>
-    <ellipse cx="55" cy="62" rx="30" ry="7" fill="none" stroke="#D4A017" stroke-width="2"/>
-    <ellipse cx="55" cy="62" rx="22" ry="4.5" fill="#3B1A00" stroke="#F5C842" stroke-width="1.5"/>
-    <line x1="40" y1="30" x2="40" y2="58" stroke="#F5C842" stroke-width="2.2" stroke-linecap="round"/>
-    <line x1="37" y1="30" x2="37" y2="40" stroke="#F5C842" stroke-width="1.5" stroke-linecap="round"/>
-    <line x1="43" y1="30" x2="43" y2="40" stroke="#F5C842" stroke-width="1.5" stroke-linecap="round"/>
-    <line x1="70" y1="30" x2="70" y2="58" stroke="#F5C842" stroke-width="2.2" stroke-linecap="round"/>
-    <path d="M70 30 Q74 34 72 42 L70 42 Z" fill="#F5C842"/>
-    <polygon points="55,45 56.5,50 61,50 57.5,53 58.8,58 55,55.5 51.2,58 52.5,53 49,50 53.5,50" fill="#D4A017"/>
-    <path d="M25 55 A30 30 0 0 1 85 55" fill="none" stroke="#C0392B" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.6"/>
-  </svg>
-  <h1><em>Chez</em> Kolé</h1>
-  <p>Saveurs authentiques & gourmandes</p>
-  <div class="hero-badge">📍 <span>Kédougou, Sénégal</span> · Livraison & Retrait disponibles</div>
+<!-- SEARCH OVERLAY -->
+<div class="search-overlay" id="searchOverlay">
+  <div class="search-inner">
+    <span style="font-size:22px">🔍</span>
+    <input type="search" class="search-input" id="searchInput" placeholder="Rechercher un plat... fataya, crêpe, tacos..." oninput="filterMenu(this.value)"/>
+    <button class="search-close" onclick="toggleSearch()">✕</button>
+  </div>
 </div>
 
-<!-- MAIN -->
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-stripe"></div>
+
+  <!-- Floating food orbs -->
+  <div class="hero-orb orb1"><span style="font-size:40px;display:flex;align-items:center;justify-content:center;width:100%;height:100%">🥟</span></div>
+  <div class="hero-orb orb2"><span style="font-size:40px;display:flex;align-items:center;justify-content:center;width:100%;height:100%">🥞</span></div>
+  <div class="hero-orb orb3"><span style="font-size:40px;display:flex;align-items:center;justify-content:center;width:100%;height:100%">🥐</span></div>
+  <div class="hero-orb orb4"><span style="font-size:40px;display:flex;align-items:center;justify-content:center;width:100%;height:100%">🥢</span></div>
+  <div class="hero-orb orb5"><span style="font-size:40px;display:flex;align-items:center;justify-content:center;width:100%;height:100%">🌮</span></div>
+
+  <div class="hero-content">
+    <div class="hero-logo-wrap">
+      <svg class="hero-logo" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="55" cy="55" r="52" fill="#1A0A00" stroke="#D4A017" stroke-width="2.5"/>
+        <ellipse cx="55" cy="62" rx="30" ry="7" fill="none" stroke="#D4A017" stroke-width="2"/>
+        <ellipse cx="55" cy="62" rx="22" ry="4.5" fill="#3B1A00" stroke="#F5C842" stroke-width="1.5"/>
+        <line x1="40" y1="30" x2="40" y2="58" stroke="#F5C842" stroke-width="2.2" stroke-linecap="round"/>
+        <line x1="37" y1="30" x2="37" y2="40" stroke="#F5C842" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="43" y1="30" x2="43" y2="40" stroke="#F5C842" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="70" y1="30" x2="70" y2="58" stroke="#F5C842" stroke-width="2.2" stroke-linecap="round"/>
+        <path d="M70 30 Q74 34 72 42 L70 42 Z" fill="#F5C842"/>
+        <polygon points="55,45 56.5,50 61,50 57.5,53 58.8,58 55,55.5 51.2,58 52.5,53 49,50 53.5,50" fill="#D4A017"/>
+        <path d="M25 55 A30 30 0 0 1 85 55" fill="none" stroke="#C0392B" stroke-width="1.5" stroke-dasharray="4 3" opacity=".6"/>
+      </svg>
+    </div>
+
+    <div class="hero-tag">Fait Maison · Kédougou</div>
+
+    <h1>
+      Chez <span class="accent">Kolé</span>
+    </h1>
+    <p class="hero-sub">Saveurs authentiques & gourmandes depuis toujours</p>
+
+    <div class="hero-pills">
+      <div class="hero-pill" id="statusPill"><span class="dot" id="statusDot"></span> <span id="statusText">Ouvert aujourd'hui</span></div>
+      <div class="hero-pill">📍 Kédougou, Sénégal</div>
+      <div class="hero-pill">🚚 Livraison & Retrait</div>
+      <div class="hero-pill">💬 Commande WhatsApp</div>
+    </div>
+
+    <div class="hero-cta">
+      <a class="btn-primary" href="javascript:void(0)" onclick="event.preventDefault();var el=document.getElementById('menu');if(el)el.scrollIntoView({behavior:'smooth'});">🍽️ Voir le menu</a>
+      <a class="btn-outline" href="javascript:void(0)" onclick="event.preventDefault();document.getElementById('info').scrollIntoView({behavior:'smooth'})">ℹ️ Nos infos</a>
+    </div>
+  </div>
+
+  <div class="hero-stripe-bottom"></div>
+</div>
+
+<!-- STATS -->
+<div class="stats-section reveal">
+  <div class="stats-inner">
+    <div class="stat-item">
+      <div class="stat-num" data-target="500">0+</div>
+      <div class="stat-label">Clients satisfaits</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">13</div>
+      <div class="stat-label">Spécialités au menu</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">7j/7</div>
+      <div class="stat-label">Ouvert toute la semaine</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">100%</div>
+      <div class="stat-label">Fait maison</div>
+    </div>
+  </div>
+</div>
+
+<!-- CATEGORY TABS -->
+<div class="cat-tabs-wrap" id="menu">
+  <div class="cat-tabs">
+    <button class="cat-tab active" onclick="scrollToSection('snacks-section', this)">🧆 Snacks Salés</button>
+    <button class="cat-tab" onclick="scrollToSection('specials-section', this)">🌟 Spécialités</button>
+
+  </div>
+</div>
+
+</div>
+
+<!-- MAIN LAYOUT -->
 <div class="main-layout">
 
-  <!-- MENU -->
+  <!-- MENU COLUMN -->
   <div class="menu-col">
 
-    <div class="cat-header">
-      <h2>🧆 Snacks Salés & Miniatures</h2>
-      <div class="cat-line"></div>
+    <!-- FILTRE FAVORIS -->
+    <div class="fav-filter-bar" id="favFilterBar" onclick="applyFavFilter()">
+      <span>🤍 Aucun favori encore</span>
+      <span style="margin-left:auto;font-size:11px;opacity:.7">Appuyer pour filtrer</span>
     </div>
-    <div class="items-grid" id="snacks-grid"></div>
+    <!-- FILTRE PRIX -->
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;align-items:center">
+      <span style="font-size:12px;font-weight:800;color:var(--warm3);text-transform:uppercase;letter-spacing:.5px">Filtrer :</span>
+      <button class="filter-btn active" data-filter="all" onclick="filterByPrice('all',this)">Tous</button>
+      <button class="filter-btn" data-filter="low" onclick="filterByPrice('low',this)">≤ 200 FCFA</button>
+      <button class="filter-btn" data-filter="mid" onclick="filterByPrice('mid',this)">200–500 FCFA</button>
+      <button class="filter-btn" data-filter="high" onclick="filterByPrice('high',this)">≥ 500 FCFA</button>
+      <button class="filter-btn" id="sortBtn" onclick="toggleSort(this)" style="margin-left:auto">↕ Prix</button>
+    </div>
 
-    <div class="cat-header">
-      <h2>🌟 Spécialités & Grands Formats</h2>
-      <div class="cat-line"></div>
+    <div class="no-results" id="noResults">
+      😔 Aucun résultat pour votre recherche.<br/>Essayez un autre terme !
     </div>
-    <div class="items-grid" id="specials-grid"></div>
+
+    <!-- SNACKS -->
+    <div class="cat-section reveal" id="snacks-section">
+      <div class="cat-header" style="margin-bottom:18px">
+        <div class="cat-header-icon">🧆</div>
+        <h2>Snacks Salés & Miniatures</h2>
+        <span class="cat-header-count" id="snacks-count">6</span>
+        <div class="cat-line"></div>
+      </div>
+      <div class="items-grid" id="snacks-grid"></div>
+    </div>
+
+    <!-- SPÉCIALITÉS -->
+    <div class="cat-section reveal" id="specials-section" style="scroll-margin-top:140px">
+      <div class="cat-header" style="margin-bottom:18px">
+        <div class="cat-header-icon">🌟</div>
+        <h2>Spécialités & Plats</h2>
+        <span class="cat-header-count" id="specials-count">7</span>
+        <div class="cat-line"></div>
+      </div>
+      <div class="items-grid" id="specials-grid"></div>
+    </div>
+    </div>
+    </div>
 
   </div>
 
@@ -607,29 +1328,211 @@ footer strong{color:var(--gold)}
       <div id="cartBody">
         <div class="cart-empty">
           <div class="cart-empty-icon">🛍️</div>
-          <p>Votre panier est vide.<br/>Ajoutez des articles !</p>
+          <p>Votre panier est vide.<br/>Ajoutez vos délices !</p>
         </div>
       </div>
       <div class="cart-footer" id="cartFooter" style="display:none">
+        <div class="cart-subtotal-row">
+          <span>Sous-total</span>
+          <span id="cartSubtotal">0 FCFA</span>
+        </div>
         <div class="cart-total-row">
           <span class="cart-total-label">Total</span>
           <span class="cart-total-amount" id="cartTotal">0 FCFA</span>
         </div>
-        <button class="order-btn" onclick="openModal()">
-          ✅ Passer la commande
-        </button>
+        <div class="free-delivery-bar" id="freeDeliveryBar" style="display:none">
+          <span id="freeDeliveryText">🚚</span>
+          <div class="free-delivery-progress"><div class="free-delivery-fill" id="freeDeliveryFill" style="width:0%"></div></div>
+        </div>
+        <div class="min-order-warn" id="minOrderWarn">⚠️ Minimum de commande : 500 FCFA</div>
+        <button class="order-btn" id="orderBtn" onclick="openModal()">✅ Commander maintenant</button>
+        <div class="cart-trust">🔒 Paiement à la livraison · Commande WhatsApp</div>
+      </div>
+    </div>
+
+    <!-- INFO RAPIDE -->
+    <div style="background:#fff;border-radius:var(--radius);border:1.5px solid rgba(212,160,23,.18);padding:18px 20px;margin-top:18px;box-shadow:var(--shadow-sm)">
+      <div style="font-weight:900;font-size:14px;color:var(--warm);margin-bottom:12px;font-family:'Playfair Display',serif">📋 Infos utiles</div>
+      <div style="font-size:13px;color:#666;line-height:2;font-weight:600">
+        📍 Kédougou, Sénégal<br/>
+        ⏰ Lun – Dim : 8h – 22h<br/>
+        📱 <a href="tel:+221781608131" style="color:var(--whatsapp);text-decoration:none">+221 78 160 81 31</a><br/>
+        💬 Commande 100% WhatsApp<br/>
+        💰 Paiement à la livraison<br/>
+        🚚 Livraison : +1000 FCFA
       </div>
     </div>
   </div>
 
 </div>
 
+<!-- INFO SECTION -->
+<div class="info-section" id="info">
+  <div class="info-inner">
+    <div class="info-card reveal-left">
+      <div class="info-card-icon">🕐</div>
+      <div class="info-card-title">Horaires d'ouverture</div>
+      <div class="info-card-text">
+        <strong>Lundi – Vendredi</strong><br/>8h00 – 22h00<br/>
+        <strong>Samedi – Dimanche</strong><br/>9h00 – 21h00<br/>
+        <div class="hours-badge" id="hoursBadge" style="margin-top:10px;font-size:12px"><span class="dot" id="hoursDot"></span> <span id="hoursText">Ouvert maintenant</span></div>
+      </div>
+    </div>
+    <div class="info-card reveal">
+      <div class="info-card-icon">📍</div>
+      <div class="info-card-title">Notre localisation</div>
+      <div class="info-card-text">
+        <strong>Kédougou, Sénégal</strong><br/>
+        Quartier centre-ville<br/>
+        Livraison dans tout Kédougou<br/>
+        Retrait sur place possible<br/>
+        <a style="color:var(--gold-light);font-weight:700;text-decoration:none;display:inline-block;margin-top:8px" onclick="event.preventDefault();window.open('https://www.google.com/maps/search/?api=1&query=Kedougou+Senegal','_blank');return false;" href="javascript:void(0)">📍 Voir sur Google Maps →</a>
+      </div>
+    </div>
+    <div class="info-card reveal">
+      <div class="info-card-icon">💬</div>
+      <div class="info-card-title">Commander facilement</div>
+      <div class="info-card-text">
+        Ajoutez vos articles au panier<br/>
+        Renseignez vos coordonnées<br/>
+        La commande part sur <strong>WhatsApp</strong><br/>
+        On confirme & on prépare !<br/>
+        <strong>Paiement à la livraison</strong>
+      </div>
+    </div>
+    <div class="info-card reveal-right">
+      <div class="info-card-icon">🏠</div>
+      <div class="info-card-title">100% Fait Maison</div>
+      <div class="info-card-text">
+        Tous nos plats sont préparés<br/>
+        <strong>frais chaque jour</strong>, avec des<br/>
+        ingrédients de qualité locale.<br/>
+        Fataya, crêpes, tacos...<br/>
+        <strong>Un goût authentique</strong> garanti.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GALLERY -->
+<div class="gallery-section">
+  <div class="reveal">
+    <h2>Notre Cuisine en Images</h2>
+    <p class="sub">Découvrez nos spécialités en photo</p>
+  </div>
+  <div class="gallery-grid" id="galleryGrid">
+    <!-- Rempli par JS -->
+  </div>
+</div>
+
+<!-- TESTIMONIALS -->
+<div class="testimonials-section" id="avis">
+  <div class="reveal">
+    <h2 style="font-family:'Playfair Display',serif;font-size:28px;text-align:center;color:var(--warm);margin-bottom:8px">Ce que disent nos clients</h2>
+    <p style="text-align:center;color:#aaa;font-size:14px;margin-bottom:28px">⭐ Plus de 500 clients satisfaits à Kédougou</p>
+  </div>
+  <div class="testimonials-grid">
+    <div class="testimonial-card reveal">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-text">« Les fataya sont incroyables ! Croustillantes à l'extérieur et bien garnies. Je commande chaque semaine par WhatsApp, c'est super pratique ! »</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">A</div>
+        <div><div class="testimonial-name">Aminata D.</div><div class="testimonial-date">Il y a 2 semaines</div></div>
+      </div>
+    </div>
+    <div class="testimonial-card reveal">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-text">« Les crêpes salées sont absolument délicieuses ! La livraison est rapide et le service toujours au top. Chez Kolé c'est la référence à Kédougou. »</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">M</div>
+        <div><div class="testimonial-name">Moussa K.</div><div class="testimonial-date">Il y a 1 mois</div></div>
+      </div>
+    </div>
+    <div class="testimonial-card reveal">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-text">« Super qualité ! J'ai commandé les mini tacos panés et les croissants salés pour une fête. Tout le monde a adoré. Prix très raisonnables aussi ! »</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">F</div>
+        <div><div class="testimonial-name">Fatou B.</div><div class="testimonial-date">Il y a 3 semaines</div></div>
+      </div>
+    </div>
+
+  <!-- FORMULAIRE AVIS -->
+  <div class="avis-form-section reveal">
+    <div class="avis-form-box">
+      <h3 style="font-family:'Playfair Display',serif;font-size:18px;color:var(--warm);margin-bottom:6px">✍️ Laisser un avis</h3>
+      <p style="font-size:12px;color:#aaa;margin-bottom:14px">Votre avis compte pour nous !</p>
+      <div class="star-rating" id="starRating">
+        <button class="star-btn" data-star="1" onclick="setRating(1)">★</button>
+        <button class="star-btn" data-star="2" onclick="setRating(2)">★</button>
+        <button class="star-btn" data-star="3" onclick="setRating(3)">★</button>
+        <button class="star-btn" data-star="4" onclick="setRating(4)">★</button>
+        <button class="star-btn" data-star="5" onclick="setRating(5)">★</button>
+      </div>
+      <input type="text" id="avisName" placeholder="Votre prénom" style="margin-bottom:8px" aria-label="Votre prénom"/>
+      <textarea id="avisText" placeholder="Votre commentaire..." style="min-height:70px;margin-bottom:12px" aria-label="Votre commentaire"></textarea>
+      <button onclick="submitAvis()" style="background:linear-gradient(135deg,var(--gold),var(--orange));border:none;border-radius:50px;padding:11px 28px;font-weight:900;font-size:13px;cursor:pointer;font-family:'Nunito',sans-serif;color:var(--dark);transition:.2s">Publier mon avis ⭐</button>
+      <div id="avisSuccess" style="display:none;margin-top:10px;color:var(--green);font-weight:800;font-size:13px">✅ Merci pour votre avis !</div>
+    </div>
+    <div id="userAvisGrid" style="margin-top:16px"></div>
+  </div>
+
+  </div>
+</div>
+
 <!-- FOOTER -->
-<footer>
+<footer id="contact">
   <div class="footer-stripe"></div>
-  <p><strong>Chez Kolé</strong> · Kédougou, Sénégal</p>
-  <p style="margin-top:6px">Fait maison avec amour ❤️</p>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <h3>Chez Kolé</h3>
+      <p>Snacks, crêpes, sandwichs<br/>et spécialités faites maison<br/>à Kédougou, Sénégal.</p>
+      <div style="margin-top:16px;display:flex;gap:10px">
+        <a style="background:var(--whatsapp);color:#fff;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:800;text-decoration:none;display:inline-flex;align-items:center;gap:6px" onclick="event.preventDefault();window.open('https://wa.me/221781608131','_blank');return false;" href="javascript:void(0)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          WhatsApp
+        </a>
+      </div>
+    </div>
+    <div class="footer-links">
+      <h4>Menu</h4>
+      <a href="javascript:void(0)" onclick="event.preventDefault();var el=document.getElementById('snacks-section');if(el)el.scrollIntoView({behavior:'smooth'})">Snacks Salés</a>
+      <a href="javascript:void(0)" onclick="event.preventDefault();var el=document.getElementById('specials-section');if(el)el.scrollIntoView({behavior:'smooth'})">Crêpes & Spécialités</a>
+
+    </div>
+    <div class="footer-links">
+      <h4>Infos</h4>
+      <a href="javascript:void(0)" onclick="event.preventDefault();document.getElementById('info').scrollIntoView({behavior:'smooth'})">Horaires</a>
+      <a href="javascript:void(0)" onclick="event.preventDefault();document.getElementById('info').scrollIntoView({behavior:'smooth'})">Livraison</a>
+      <a href="javascript:void(0)" onclick="event.preventDefault();var el=document.getElementById('avis');if(el)el.scrollIntoView({behavior:'smooth'})">Avis clients</a>
+      <a onclick="event.preventDefault();window.open('https://wa.me/221781608131','_blank');return false;" href="javascript:void(0)">Nous contacter</a>
+    </div>
+    <div class="footer-links">
+      <h4>Contact</h4>
+      <a href="tel:+221781608131">+221 78 160 81 31</a>
+      <a onclick="event.preventDefault();window.open('https://wa.me/221781608131','_blank');return false;" href="javascript:void(0)">Commander sur WhatsApp</a>
+      <div style="color:rgba(255,255,255,.4);font-size:12px;margin-top:10px;line-height:1.6">
+        📍 Kédougou, Sénégal<br/>⏰ 8h – 22h, 7j/7
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© <span id="footerYear">2025</span> <strong>Chez Kolé</strong> · Kédougou, Sénégal · Fait maison avec ❤️</p>
+    <p>Designed by <strong>Shelby Design</strong> · <button onclick="openAdmin()" style="background:none;border:none;color:rgba(255,255,255,.15);font-size:11px;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:600">⚙</button></p>
+  </div>
 </footer>
+
+<!-- MOBILE FLOATING CART -->
+<button class="mobile-cart-fab" id="mobileCartFab" onclick="openCart()">
+  🛒 Panier
+  <span class="cart-count" id="cartCountMobile">0</span>
+</button>
+
+<!-- BACK TO TOP -->
+<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Retour en haut">↑</button>
+
+<!-- TOAST CONTAINER -->
+<div id="toastContainer"></div>
 
 <!-- ORDER MODAL -->
 <div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
@@ -643,56 +1546,66 @@ footer strong{color:var(--gold)}
         <div class="order-summary" id="orderSummary"></div>
 
         <div class="form-group">
-          <label>Votre Nom *</label>
-          <input type="text" id="clientName" placeholder="Ex: Aminata Diallo" autocomplete="name"/>
-          <div class="error-msg" id="nameError">Veuillez entrer votre nom.</div>
+          <label>👤 Votre Nom *</label>
+          <div class="input-icon">
+            <span class="icon">👤</span>
+            <input type="text" id="clientName" placeholder="Ex: Aminata Diallo" autocomplete="name"/>
+          </div>
+          <div class="error-msg" id="nameError">Veuillez entrer votre nom complet.</div>
         </div>
 
         <div class="form-group">
-          <label>Téléphone *</label>
-          <input type="tel" id="clientPhone" placeholder="Ex: 77 123 45 67" autocomplete="tel"/>
-          <div class="error-msg" id="phoneError">Veuillez entrer un numéro valide (7X XXX XX XX).</div>
+          <label>📱 Téléphone *</label>
+          <div class="input-icon">
+            <span class="icon">📱</span>
+            <input type="tel" id="clientPhone" placeholder="Ex: 77 123 45 67" autocomplete="tel"/>
+          </div>
+          <div class="error-msg" id="phoneError">Numéro invalide. Format: 7X XXX XX XX</div>
         </div>
 
         <div class="form-group">
-          <label>Mode de récupération</label>
-          <select id="deliveryMode" onchange="toggleAddress()">
-            <option value="retrait">🏃 Retrait sur place</option>
-            <option value="livraison">🚚 Livraison (Kédougou)</option>
-          </select>
+          <label>🚚 Mode de récupération</label>
+          <div class="delivery-mode-btns">
+            <button class="mode-btn active" id="modeRetrait" onclick="setMode('retrait')">🏃 Retrait sur place</button>
+            <button class="mode-btn" id="modeLivraison" onclick="setMode('livraison')">🚚 Livraison</button>
+          </div>
+          <input type="hidden" id="deliveryMode" value="retrait"/>
         </div>
 
         <div class="form-group" id="addressGroup" style="display:none">
-          <label>Adresse de livraison *</label>
-          <input type="text" id="clientAddress" placeholder="Quartier, rue..."/>
+          <label>📍 Adresse de livraison *</label>
+          <div class="input-icon">
+            <span class="icon">📍</span>
+            <input type="text" id="clientAddress" placeholder="Quartier, rue, point de repère..."/>
+          </div>
           <div class="error-msg" id="addressError">Veuillez entrer votre adresse.</div>
         </div>
 
         <div class="form-group">
-          <label>Note / Instructions (optionnel)</label>
-          <textarea id="clientNote" placeholder="Allergie, instructions spéciales..."></textarea>
+          <label>📝 Note / Instructions (optionnel)</label>
+          <textarea id="clientNote" placeholder="Allergies, instructions spéciales, heure de livraison..."></textarea>
         </div>
 
-        <div class="delivery-info">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-          La commande sera envoyée sur WhatsApp du propriétaire.
+        <div class="delivery-note">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#25D366" style="flex-shrink:0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          <span>Votre commande sera envoyée via <strong>WhatsApp</strong> au propriétaire. Paiement à la livraison ou au retrait.</span>
         </div>
 
         <button class="confirm-btn" onclick="confirmOrder()">
-          <svg class="whatsapp-icon" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
           Envoyer sur WhatsApp
         </button>
       </div>
     </div>
 
-    <!-- SUCCESS -->
+    <!-- SUCCESS SCREEN -->
     <div class="success-screen" id="successScreen">
-      <div class="success-icon">✅</div>
+      <div class="success-icon">🎉</div>
       <h3>Commande envoyée !</h3>
-      <p>Votre commande a été transmise.<br/>Le propriétaire vous contactera pour confirmer.</p>
+      <p>Merci pour votre commande !<br/>Le propriétaire va vous confirmer rapidement.</p>
       <div class="success-ref" id="successRef">–</div>
-      <p style="font-size:13px;color:#888;margin-bottom:16px">Si WhatsApp ne s'est pas ouvert automatiquement, cliquez ci-dessous :</p>
-      <a class="whatsapp-redirect-btn" id="whatsappFallback" href="#" target="_blank" rel="noopener">
+      <p style="font-size:13px;color:#aaa;margin-bottom:14px">Si WhatsApp ne s'est pas ouvert :</p>
+      <a class="whatsapp-redirect-btn" id="whatsappFallback" href="javascript:void(0)" onclick="if(window.pendingWhatsAppUrl){window.open(window.pendingWhatsAppUrl,'_blank');}return false;">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
         Ouvrir WhatsApp
       </a>
@@ -703,117 +1616,880 @@ footer strong{color:var(--gold)}
 
 <script>
 // ── CONFIG ──
-const OWNER_PHONE = '221781608131'; // numéro sans espaces ni +
+const OWNER_PHONE = '221781608131';
+const AI_API_KEY = 'VOTRE_CLE_API_ICI'; // Remplacez par votre clé Anthropic
+const DELIVERY_FEE = 1000;  // FCFA — modifiable
+const MIN_ORDER = 500;       // FCFA minimum
 
-// ── DATA ──
+// ── MENU DATA (avec vraies photos Unsplash) ──
 const MENU = {
   snacks: [
-    {id:'fataya',   emoji:'🥟', name:'Fataya',        price:100},
-    {id:'nems',     emoji:'🥢', name:'Nems',           price:150},
-    {id:'rissoles', emoji:'🫓', name:'Rissoles',       price:200},
-    {id:'minipizza',emoji:'🍕', name:'Mini-pizzas',    price:200},
-    {id:'croque',   emoji:'🥪', name:'Croque-monsieur',price:200},
-    {id:'beignet',  emoji:'🍩', name:'Beignets',       price:100},
+    {id:'fataya',    emoji:'🥟', name:'Fataya',          price:100,  tags:['Populaire','Frit'], badge:'pop'},
+    {id:'nems',      emoji:'🥢', name:'Nems',             price:150,  tags:['Asiatique','Frit']},
+    {id:'rissoles',  emoji:'🫓', name:'Rissoles',         price:200,  tags:['Frit','Croustillant']},
+    {id:'minipizza', emoji:'🍕', name:'Mini-Pizzas',      price:200,  tags:['Populaire'], badge:'pop'},
+    {id:'croque',    emoji:'🥪', name:'Croque-Monsieur',  price:200,  tags:['Grillé','Fromage']},
+    {id:'beignet',   emoji:'🍩', name:'Beignets',         price:100,  tags:['Sucré/Salé','Moelleux']},
   ],
   specials: [
-    {id:'crepe_s',  emoji:'🥞', name:'Crêpes sucrées',  price:500},
-    {id:'crepe_sal',emoji:'🧇', name:'Crêpes salées',   price:1000},
-    {id:'croissant',emoji:'🥐', name:'Croissants salés',price:1000},
-        {id:'sand_simple', emoji:'🥖', name:'Sandwich Simple', price:1000},
-    {id:'sand_complet', emoji:'🥖', name:'Sandwich Complet', price:1500},
-    {id:'tacos_np', emoji:'🌮', name:'Mini Tacos (non panés)', price:500},
-    {id:'tacos_p', emoji:'🌮', name:'Mini Tacos (panés)', price:600},
-  ]
+    {id:'crepe_s',      emoji:'🥞', name:'Crêpes Sucrées',         price:500,  tags:['Sucré','Maison'], badge:'new'},
+    {id:'crepe_sal',    emoji:'🧇', name:'Crêpes Salées',           price:1000, tags:['Salé','Maison']},
+    {id:'croissant',    emoji:'🥐', name:'Croissants Salés',        price:1000, tags:['Feuilleté','Maison']},
+    {id:'sand_simple',  emoji:'🥖', name:'Sandwich Simple',         price:1000, tags:['Sandwich']},
+    {id:'sand_complet', emoji:'🥖', name:'Sandwich Complet',        price:1500, tags:['Sandwich','Complet'], badge:'pop'},
+    {id:'tacos_np',     emoji:'🌮', name:'Mini Tacos (non panés)',  price:500,  tags:['Léger']},
+    {id:'tacos_p',      emoji:'🌮', name:'Mini Tacos (panés)',      price:600,  tags:['Croustillant'], badge:'new'},
+  ],
 };
 
+
+
 let cart = {};
-let pendingWhatsAppUrl = '';
+window.pendingWhatsAppUrl = '';
+
+// ── ALL ITEMS FLAT ──
+function allItems(){
+  return [...MENU.snacks,...MENU.specials];
+}
+function findItem(id){ return allItems().find(i=>i.id===id); }
+
+
+// ── HORAIRES DYNAMIQUES ──
+function updateHoursStatus(){
+  const now = new Date();
+  const h = now.getUTCHours();   // Kédougou = UTC+0
+  const min = now.getUTCMinutes();
+  const day = now.getUTCDay();   // 0=Dim, 6=Sam
+  const t = h*60+min;
+  const isWeekend = (day===0||day===6);
+  const openT = isWeekend ? 9*60 : 8*60;
+  const closeT = isWeekend ? 21*60 : 22*60;
+  const isOpen = t>=openT && t<closeT;
+
+  // Hero pill
+  const dot = document.getElementById('statusDot');
+  const txt = document.getElementById('statusText');
+  const pill = document.getElementById('statusPill');
+  if(dot && txt && pill){
+    dot.style.background = isOpen ? 'var(--green)' : '#c0392b';
+    txt.textContent = isOpen ? 'Ouvert maintenant' : 'Fermé actuellement';
+    pill.style.background = isOpen ? 'rgba(39,174,96,.12)' : 'rgba(192,57,43,.1)';
+    pill.style.border = isOpen ? '1px solid rgba(39,174,96,.3)' : '1px solid rgba(192,57,43,.3)';
+    pill.style.color = isOpen ? 'rgba(255,255,255,.75)' : '#e57373';
+  }
+  // Hours badge in info section
+  const hb = document.getElementById('hoursBadge');
+  const hd = document.getElementById('hoursDot');
+  const ht = document.getElementById('hoursText');
+  if(hb && hd && ht){
+    const nextOpen = isOpen ? null : (isWeekend ? '9h00' : '8h00');
+    hd.style.background = isOpen ? '#22924a' : '#c0392b';
+    ht.textContent = isOpen ? 'Ouvert maintenant' : ('Fermé · Ouvre à ' + (nextOpen||'8h00'));
+    hb.style.background = isOpen ? 'rgba(39,174,96,.12)' : 'rgba(192,57,43,.1)';
+    hb.style.borderColor = isOpen ? 'rgba(39,174,96,.3)' : 'rgba(192,57,43,.3)';
+    hb.style.color = isOpen ? '#22924a' : '#c0392b';
+  }
+}
+
+// ── COMPTEUR ANIMÉ ──
+function animateCounters(){
+  document.querySelectorAll('.stat-num[data-target]').forEach(el=>{
+    const target = parseInt(el.dataset.target);
+    let current = 0;
+    const step = Math.ceil(target/40);
+    const timer = setInterval(()=>{
+      current = Math.min(current+step, target);
+      el.textContent = current.toLocaleString()+'+';
+      if(current>=target) clearInterval(timer);
+    }, 30);
+  });
+}
+
+// ── MINIMUM COMMANDE ──
+function checkMinOrder(){
+  const total = getTotal();
+  const warn = document.getElementById('minOrderWarn');
+  const btn = document.getElementById('orderBtn');
+  if(!warn||!btn) return;
+  const ok = total >= MIN_ORDER;
+  warn.classList.toggle('show', !ok && total>0);
+  btn.disabled = !ok;
+  btn.style.opacity = ok ? '1' : '.5';
+  btn.style.cursor = ok ? 'pointer' : 'not-allowed';
+}
+
+// ── FILTRE PAR PRIX ──
+let currentFilter = 'all';
+let sortAsc = false;
+let sortActive = false;
+
+function filterByPrice(filter, btn){
+  currentFilter = filter;
+  document.querySelectorAll('.filter-btn:not(#sortBtn)').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFiltersAndSort();
+}
+
+function toggleSort(btn){
+  if(!sortActive){ sortActive=true; sortAsc=true; }
+  else if(sortAsc){ sortAsc=false; }
+  else { sortActive=false; }
+  btn.textContent = sortActive ? (sortAsc ? '↑ Prix' : '↓ Prix') : '↕ Prix';
+  btn.classList.toggle('active', sortActive);
+  applyFiltersAndSort();
+}
+
+function applyFiltersAndSort(){
+  ['snacks','specials'].forEach(cat=>{
+    const grid = document.getElementById(cat+'-grid');
+    const section = document.getElementById(cat+'-section');
+    if(!grid) return;
+    const cards = [...grid.querySelectorAll('.item-card')];
+    let visible = cards.filter(c=>{
+      const price = parseInt(c.dataset.price||0);
+      if(currentFilter==='low') return price<=200;
+      if(currentFilter==='mid') return price>200&&price<500;
+      if(currentFilter==='high') return price>=500;
+      return true;
+    });
+    // Sort
+    if(sortActive){
+      visible.sort((a,b)=>sortAsc
+        ?(parseInt(a.dataset.price)-parseInt(b.dataset.price))
+        :(parseInt(b.dataset.price)-parseInt(a.dataset.price))
+      );
+    }
+    // Apply visibility
+    cards.forEach(c=>c.style.display='none');
+    visible.forEach(c=>{ c.style.display=''; grid.appendChild(c); });
+    if(section) section.style.display = visible.length ? '' : 'none';
+  });
+}
+
+// ── PARTAGE ──
+function shareApp(){
+  const shareData = {
+    title: 'Chez Kolé – Kédougou',
+    text: '🍽️ Commandez en ligne chez Kolé – snacks, crêpes & spécialités maison à Kédougou !',
+    url: window.location.href
+  };
+  if(navigator.share){
+    navigator.share(shareData).catch(()=>{});
+  } else {
+    navigator.clipboard.writeText(window.location.href).then(()=>{
+      alert('🔗 Lien copié dans le presse-papier !');
+    }).catch(()=>{
+      alert('🔗 Partage : '+window.location.href);
+    });
+  }
+}
+
+
+// ── FAVORIS ──
+let favorites = JSON.parse(localStorage.getItem('kole_favs')||'[]');
+let showingFavs = false;
+
+function saveFavs(){ localStorage.setItem('kole_favs', JSON.stringify(favorites)); }
+
+function toggleFav(id, btn, e){
+  e.stopPropagation();
+  const idx = favorites.indexOf(id);
+  if(idx===-1){ favorites.push(id); btn.textContent='❤️'; btn.classList.add('active'); }
+  else { favorites.splice(idx,1); btn.textContent='🤍'; btn.classList.remove('active'); }
+  saveFavs();
+  updateFavFilterBar();
+  if(showingFavs) applyFavFilter();
+}
+
+function updateFavFilterBar(){
+  const bar = document.getElementById('favFilterBar');
+  if(!bar) return;
+  bar.querySelector('span').textContent = favorites.length
+    ? `❤️ Mes favoris (${favorites.length})`
+    : '🤍 Aucun favori encore';
+}
+
+function applyFavFilter(){
+  showingFavs = !showingFavs;
+  const bar = document.getElementById('favFilterBar');
+  if(bar) bar.classList.toggle('active', showingFavs);
+  document.querySelectorAll('.item-card').forEach(c=>{
+    c.style.display = (!showingFavs || favorites.includes(c.dataset.id)) ? '' : 'none';
+  });
+  ['snacks','specials'].forEach(cat=>{
+    const s = document.getElementById(cat+'-section');
+    const g = document.getElementById(cat+'-grid');
+    if(s&&g){ const vis=[...g.querySelectorAll('.item-card')].some(c=>c.style.display!=='none'); s.style.display=vis?'':'none'; }
+  });
+}
+
+
+// ── CHATBOT IA ──
+let chatOpen = false;
+let chatHistory = [];
+let chatTyping = false;
+
+const AI_SYSTEM_PROMPT = `Tu es l'assistant virtuel de "Chez Kolé", un restaurant de street food situé à Kédougou, Sénégal. Tu t'appelles "Kolébot". Tu es chaleureux, sympa et tu parles en français.
+
+MENU COMPLET :
+SNACKS SALÉS :
+- 🥟 Fataya — 100 FCFA (feuilleté croustillant farci) [Populaire]
+- 🥢 Nems — 150 FCFA (rouleau croustillant parfumé)
+- 🫓 Rissoles — 200 FCFA (chausson frit garni)
+- 🍕 Mini-Pizzas — 200 FCFA (base tomate, fromage fondant) [Populaire]
+- 🥪 Croque-Monsieur — 200 FCFA (pain de mie grillé, jambon, fromage)
+- 🍩 Beignets — 100 FCFA (beignets maison moelleux)
+
+SPÉCIALITÉS & PLATS :
+- 🥞 Crêpes Sucrées — 500 FCFA (nutella, confiture…) [Nouveau]
+- 🧇 Crêpes Salées — 1000 FCFA (œuf, fromage, légumes, jambon…)
+- 🥐 Croissants Salés — 1000 FCFA (garniture salée maison)
+- 🥖 Sandwich Simple — 1000 FCFA (pain baguette, garniture classique)
+- 🥖 Sandwich Complet — 1500 FCFA (garniture complète généreuse) [Populaire]
+- 🌮 Mini Tacos (non panés) — 500 FCFA (wrap garni)
+- 🌮 Mini Tacos (panés) — 600 FCFA (wrap pané & doré) [Nouveau]
+
+INFOS IMPORTANTES :
+- Adresse : Kédougou, Sénégal (quartier centre-ville)
+- Horaires : Lundi–Vendredi 8h–22h / Samedi–Dimanche 9h–21h
+- Livraison : 1000 FCFA dans tout Kédougou
+- Commande minimum : 500 FCFA
+- Paiement : à la livraison ou au retrait (pas de paiement en ligne)
+- Comment commander : ajouter au panier sur le site → envoyer via WhatsApp
+- Contact : +221 78 160 81 31 (WhatsApp)
+- Tout est fait maison, frais chaque jour
+
+Réponds de manière concise (2-4 phrases max). Si on te demande de commander, dis de cliquer sur "+" à côté du plat. Utilise des emojis de temps en temps pour être sympa.`;
+
+function toggleChat(){
+  chatOpen = !chatOpen;
+  document.getElementById('chatPanel').classList.toggle('open', chatOpen);
+  if(chatOpen){
+    setTimeout(()=>document.getElementById('chatInput').focus(), 350);
+    document.getElementById('chatFab').style.background = 'linear-gradient(135deg,#5a33c4,#8a4dd4)';
+  } else {
+    document.getElementById('chatFab').style.background = '';
+  }
+}
+
+function nowTime(){
+  return new Date().toLocaleTimeString('fr',{hour:'2-digit',minute:'2-digit'});
+}
+
+function addMsg(text, isUser){
+  const msgs = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + (isUser?'user':'bot');
+  div.innerHTML = `<div class="chat-bubble">${text}</div><div class="chat-msg-time">${nowTime()}</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function setTyping(show){
+  chatTyping = show;
+  const el = document.getElementById('chatTyping');
+  if(el){ el.classList.toggle('show', show); el.parentElement.scrollTop = el.parentElement.scrollHeight; }
+  document.getElementById('chatSendBtn').disabled = show;
+}
+
+async function callAI(userMessage){
+  chatHistory.push({role:'user', content: userMessage});
+  setTyping(true);
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key': AI_API_KEY,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body: JSON.stringify({
+        model:'claude-haiku-4-5-20251001',
+        max_tokens:350,
+        system: AI_SYSTEM_PROMPT,
+        messages: chatHistory.slice(-8)
+      })
+    });
+    const data = await res.json();
+    const reply = data?.content?.[0]?.text || "Désolé, je n'ai pas pu répondre. Contactez-nous sur WhatsApp !";
+    chatHistory.push({role:'assistant', content: reply});
+    setTyping(false);
+    addMsg(reply.replace(/\n/g,'<br/>'), false);
+  } catch(err) {
+    setTyping(false);
+    addMsg("⚠️ Connexion IA indisponible. Contactez-nous via WhatsApp au <strong>+221 78 160 81 31</strong> !", false);
+  }
+}
+
+function sendMessage(){
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if(!text || chatTyping) return;
+  input.value = '';
+  addMsg(text, true);
+  // Hide quick btns after first real message
+  const qb = document.getElementById('chatQuickBtns');
+  if(qb) qb.style.display='none';
+  callAI(text);
+}
+
+function sendQuick(text){
+  if(chatTyping) return;
+  const qb = document.getElementById('chatQuickBtns');
+  if(qb) qb.style.display='none';
+  addMsg(text, true);
+  callAI(text);
+}
+
+
+// ════════════════════════════════════════════
+// ── COPYRIGHT DYNAMIQUE ──
+// ════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  const y=document.getElementById('footerYear');
+  if(y) y.textContent=new Date().getFullYear();
+});
+
+// ════════════════════════════════════════════
+// ── PWA MANIFEST INLINE ──
+// ════════════════════════════════════════════
+(function(){
+  const manifest={
+    name:'Chez Kolé – Kédougou',short_name:'Chez Kolé',
+    description:'Snacks, crêpes & spécialités faites maison à Kédougou',
+    start_url:'.',display:'standalone',
+    background_color:'#140800',theme_color:'#D4A017',
+    icons:[{src:"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='24' fill='%231A0A00'/><polygon points='96,60 101,80 121,80 106,92 111,112 96,100 81,112 86,92 71,80 91,80' fill='%23D4A017'/></svg>",sizes:'192x192',type:'image/svg+xml'}]
+  };
+  const blob=new Blob([JSON.stringify(manifest)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const link=document.getElementById('pwaManifest');
+  if(link) link.href=url;
+  if('serviceWorker' in navigator){
+    const swCode=`self.addEventListener('fetch',e=>e.respondWith(fetch(e.request).catch(()=>new Response('<h2>Chez Kolé – Hors ligne</h2><p>Vérifiez votre connexion internet.</p>',{headers:{'Content-Type':'text/html'}}))))`;
+    const swBlob=new Blob([swCode],{type:'application/javascript'});
+    navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(()=>{});
+  }
+})();
+
+// ════════════════════════════════════════════
+// ── DARK MODE ──
+// ════════════════════════════════════════════
+let isDark = localStorage.getItem('kole_dark')==='1';
+function applyDark(){
+  document.body.classList.toggle('dark', isDark);
+  const btn=document.getElementById('darkBtn');
+  if(btn) btn.textContent=isDark?'☀️':'🌙';
+  localStorage.setItem('kole_dark', isDark?'1':'0');
+}
+function toggleDark(){ isDark=!isDark; applyDark(); }
+applyDark();
+
+// ════════════════════════════════════════════
+// ── MULTI-LANGUE FR / WOLOF ──
+// ════════════════════════════════════════════
+const LANGS = {
+  fr:{
+    panier:'Panier', menu:'Menu', infos:'Infos', avis:'Avis', contact:'Contact',
+    voir_menu:'🍽️ Voir le menu', nos_infos:'ℹ️ Nos infos',
+    snacks:'Snacks Salés', specials:'Spécialités & Plats',
+    ouvert:'Ouvert maintenant', ferme:'Fermé',
+    commander:'Commander maintenant', vider:'Vider',
+    rechercher:'Rechercher un plat...', livraison:'Livraison',
+  },
+  wo:{
+    panier:'Sac bi', menu:'Listu', infos:'Xam-xam', avis:'Xam-xam', contact:'Jokkante',
+    voir_menu:'🍽️ Xool listu bi', nos_infos:'ℹ️ Xam ci nun',
+    snacks:'Lekk-lekk', specials:'Dëkk-dëkk',
+    ouvert:'Ubi na', ferme:'Tëjoon na',
+    commander:'Jënd léegi', vider:'Sopi',
+    rechercher:'Seet lekk...', livraison:'Yobu',
+  }
+};
+let currentLang = localStorage.getItem('kole_lang')||'fr';
+function toggleLang(){
+  currentLang = currentLang==='fr'?'wo':'fr';
+  localStorage.setItem('kole_lang', currentLang);
+  applyLang();
+}
+function applyLang(){
+  const L = LANGS[currentLang];
+  const btn = document.getElementById('langBtn');
+  if(btn) btn.innerHTML = currentLang==='fr'?'🇫🇷 FR':'🇸🇳 WO';
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key=el.dataset.i18n;
+    if(L[key]) el.textContent=L[key];
+  });
+  const si=document.getElementById('searchInput');
+  if(si) si.placeholder=L.rechercher;
+}
+
+// ════════════════════════════════════════════
+// ── POPUP PROMO ──
+// ════════════════════════════════════════════
+function showPromoPopup(){
+  if(localStorage.getItem('kole_promo_seen')) return;
+  const el=document.getElementById('promoPopup');
+  if(el){ el.classList.add('show'); }
+}
+function closePromoPopup(){
+  const el=document.getElementById('promoPopup');
+  if(el) el.classList.remove('show');
+  localStorage.setItem('kole_promo_seen','1');
+}
+function copyPromoCode(el){
+  navigator.clipboard.writeText('KOLE1ER').then(()=>{
+    const orig=el.textContent; el.textContent='✅ Copié !';
+    setTimeout(()=>el.textContent=orig,2000);
+  }).catch(()=>{});
+}
+setTimeout(showPromoPopup, 5000);
+
+// ════════════════════════════════════════════
+// ── HISTORIQUE COMMANDES ──
+// ════════════════════════════════════════════
+function saveToHistory(ref, items, total, mode){
+  const hist = JSON.parse(localStorage.getItem('kole_history')||'[]');
+  hist.unshift({ref, items:Object.values(items).map(({item,qty})=>({n:item.name,e:item.emoji,q:qty,p:item.price})), total, mode, date:new Date().toLocaleDateString('fr')});
+  localStorage.setItem('kole_history', JSON.stringify(hist.slice(0,20)));
+}
+function openHistorique(){
+  const el=document.getElementById('historiqueOverlay');
+  if(!el) return;
+  const hist=JSON.parse(localStorage.getItem('kole_history')||'[]');
+  const body=document.getElementById('histBody');
+  if(hist.length===0){
+    body.innerHTML='<div class="hist-empty">📭 Aucune commande pour le moment.<br/>Passez votre première commande !</div>';
+  } else {
+    body.innerHTML=hist.map(h=>`
+      <div class="hist-item">
+        <div class="hist-item-head">
+          <span class="hist-ref">${h.ref}</span>
+          <span class="hist-date">${h.date} · ${h.mode==='livraison'?'🚚 Livraison':'🏃 Retrait'}</span>
+        </div>
+        <div class="hist-items-list">${h.items.map(i=>`${i.e} ${i.n} × ${i.q}`).join(' · ')}</div>
+        <div class="hist-total">Total : ${h.total.toLocaleString()} FCFA</div>
+      </div>`).join('');
+  }
+  el.classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeHistorique(){
+  const el=document.getElementById('historiqueOverlay');
+  if(el) el.classList.remove('open');
+  document.body.style.overflow='';
+}
+
+// ════════════════════════════════════════════
+// ── STATS / CLICK TRACKING ──
+// ════════════════════════════════════════════
+let stats = JSON.parse(localStorage.getItem('kole_stats')||'{"visits":0,"clicks":{},"orders":0}');
+stats.visits++;
+localStorage.setItem('kole_stats', JSON.stringify(stats));
+function trackClick(id){
+  stats.clicks[id]=(stats.clicks[id]||0)+1;
+  localStorage.setItem('kole_stats',JSON.stringify(stats));
+}
+function resetStats(){
+  stats={visits:0,clicks:{},orders:0};
+  localStorage.setItem('kole_stats',JSON.stringify(stats));
+  renderAdminContent();
+}
+
+// ════════════════════════════════════════════
+// ── ADMIN PANEL ──
+// ════════════════════════════════════════════
+const ADMIN_PWD = 'kole2024';
+let adminUnlocked = false;
+let unavailableItems = JSON.parse(localStorage.getItem('kole_unavail')||'[]');
+
+function openAdmin(){
+  document.getElementById('adminOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+  if(!adminUnlocked){
+    document.getElementById('adminLogin').style.display='flex';
+    document.getElementById('adminContent').style.display='none';
+    setTimeout(()=>document.getElementById('adminPwd').focus(),200);
+  } else { renderAdminContent(); }
+}
+function closeAdmin(){
+  document.getElementById('adminOverlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+function checkAdminPwd(){
+  const pwd=document.getElementById('adminPwd').value;
+  const err=document.getElementById('adminPwdError');
+  if(pwd===ADMIN_PWD){
+    adminUnlocked=true;
+    document.getElementById('adminLogin').style.display='none';
+    document.getElementById('adminContent').style.display='block';
+    renderAdminContent();
+  } else {
+    err.textContent='❌ Mot de passe incorrect';
+    document.getElementById('adminPwd').value='';
+  }
+}
+function renderAdminContent(){
+  // Stats
+  const sg=document.getElementById('adminStats');
+  const topItem=Object.entries(stats.clicks).sort((a,b)=>b[1]-a[1])[0];
+  sg.innerHTML=`
+    <div class="admin-stat"><div class="admin-stat-num">${stats.visits}</div><div class="admin-stat-label">Visites</div></div>
+    <div class="admin-stat"><div class="admin-stat-num">${stats.orders}</div><div class="admin-stat-label">Commandes</div></div>
+    <div class="admin-stat"><div class="admin-stat-num">${Object.values(stats.clicks).reduce((a,b)=>a+b,0)}</div><div class="admin-stat-label">Clics plats</div></div>
+    <div class="admin-stat"><div class="admin-stat-num">${topItem?topItem[0].split(':')[1]||topItem[0]:'–'}</div><div class="admin-stat-label">+ populaire</div></div>
+  `;
+  // Items
+  const ig=document.getElementById('adminItems');
+  ig.innerHTML=allItems().map(item=>`
+    <div class="admin-item-row">
+      <span class="admin-item-emoji">${item.emoji}</span>
+      <span class="admin-item-name">${item.name}</span>
+      <span class="admin-item-price">${item.price.toLocaleString()} F</span>
+      <button class="admin-toggle ${unavailableItems.includes(item.id)?'off':''}" onclick="toggleItemAvail('${item.id}',this)">
+        ${unavailableItems.includes(item.id)?'OFF':'ON'}
+      </button>
+    </div>`).join('');
+}
+function toggleItemAvail(id, btn){
+  const idx=unavailableItems.indexOf(id);
+  if(idx===-1){ unavailableItems.push(id); btn.textContent='OFF'; btn.classList.add('off'); }
+  else { unavailableItems.splice(idx,1); btn.textContent='ON'; btn.classList.remove('off'); }
+  localStorage.setItem('kole_unavail',JSON.stringify(unavailableItems));
+  renderMenu();
+}
+
+// ════════════════════════════════════════════
+// ── FAKE VIEW COUNTERS & LAST ORDER BADGES ──
+// ════════════════════════════════════════════
+const BASE_VIEWS={fataya:47,nems:23,rissoles:18,minipizza:38,croque:21,beignet:31,
+  crepe_s:52,crepe_sal:29,croissant:33,sand_simple:24,sand_complet:41,tacos_np:19,tacos_p:35};
+const LAST_ORDER_ITEMS=['fataya','minipizza','crepe_s','sand_complet','tacos_p'];
+const ORDER_TIMES=[3,7,12,22,45];
+function getViewCount(id){
+  return (BASE_VIEWS[id]||15)+(stats.clicks[id]||0)+Math.floor(Math.random()*3);
+}
+function addMetaBars(){
+  document.querySelectorAll('.item-card').forEach(card=>{
+    const id=card.dataset.id;
+    if(!id) return;
+    const body=card.querySelector('.item-body');
+    if(!body||body.querySelector('.item-meta-bar')) return;
+    const bar=document.createElement('div');
+    bar.className='item-meta-bar';
+    const views=document.createElement('span');
+    views.className='view-counter';
+    views.innerHTML=`👁 ${getViewCount(id)} vues`;
+    bar.appendChild(views);
+    if(LAST_ORDER_ITEMS.includes(id)){
+      const t=ORDER_TIMES[LAST_ORDER_ITEMS.indexOf(id)];
+      const badge=document.createElement('span');
+      badge.className='last-order-badge';
+      badge.textContent=`✅ Commandé il y a ${t} min`;
+      bar.appendChild(badge);
+    }
+    // Insert after item-tags
+    const tags=body.querySelector('.item-tags');
+    if(tags) tags.after(bar); else body.prepend(bar);
+  });
+}
+
+// ════════════════════════════════════════════
+// ── UPSELL IN CART ──
+// ════════════════════════════════════════════
+function getUpsellItems(){
+  const inCart=Object.keys(cart);
+  return allItems().filter(i=>!inCart.includes(i.id)&&!unavailableItems.includes(i.id)).slice(0,4);
+}
+function renderUpsell(){
+  const existing=document.querySelector('.cart-upsell');
+  if(existing) existing.remove();
+  const keys=Object.keys(cart);
+  if(keys.length===0) return;
+  const suggestions=getUpsellItems();
+  if(suggestions.length===0) return;
+  const div=document.createElement('div');
+  div.className='cart-upsell';
+  div.innerHTML=`<div class="cart-upsell-title">💡 Vous aimerez aussi</div>
+    <div class="cart-upsell-items">${suggestions.map(i=>`
+      <div class="cart-upsell-item" onclick="addToCart('${i.id}')">
+        <span>${i.emoji}</span><b>${i.name.split(' ')[0]}</b><small>${i.price.toLocaleString()} F</small>
+      </div>`).join('')}
+    </div>`;
+  const footer=document.getElementById('cartFooter');
+  if(footer) footer.before(div);
+}
+
+// ════════════════════════════════════════════
+// ── FREE DELIVERY THRESHOLD ──
+// ════════════════════════════════════════════
+const FREE_DELIVERY_AT = 3000;
+function updateFreeDelivery(){
+  const bar=document.getElementById('freeDeliveryBar');
+  const txt=document.getElementById('freeDeliveryText');
+  const fill=document.getElementById('freeDeliveryFill');
+  if(!bar||!txt||!fill) return;
+  const total=getTotal();
+  if(total===0){ bar.style.display='none'; return; }
+  bar.style.display='flex';
+  if(total>=FREE_DELIVERY_AT){
+    txt.textContent='🎉 Livraison offerte !';
+    fill.style.width='100%';
+    fill.style.background='#27AE60';
+  } else {
+    const remain=(FREE_DELIVERY_AT-total).toLocaleString();
+    txt.textContent=`🚚 Encore ${remain} F pour la livraison offerte`;
+    fill.style.width=Math.min(100,(total/FREE_DELIVERY_AT)*100)+'%';
+    fill.style.background='#27AE60';
+  }
+}
+
+// ════════════════════════════════════════════
+// ── SON AU CLIC ──
+// ════════════════════════════════════════════
+function playAddSound(){
+  try{
+    const ctx=new (window.AudioContext||window.webkitAudioContext)();
+    const osc=ctx.createOscillator();
+    const gain=ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.frequency.setValueAtTime(600,ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(900,ctx.currentTime+0.06);
+    gain.gain.setValueAtTime(0.12,ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.15);
+    osc.start(ctx.currentTime); osc.stop(ctx.currentTime+0.15);
+  } catch(e){}
+}
+
+// ════════════════════════════════════════════
+// ── AVIS CLIENTS ──
+// ════════════════════════════════════════════
+let currentRating=0;
+function setRating(n){
+  currentRating=n;
+  document.querySelectorAll('.star-btn').forEach((b,i)=>{
+    b.classList.toggle('active',i<n);
+  });
+}
+function submitAvis(){
+  const name=document.getElementById('avisName').value.trim();
+  const text=document.getElementById('avisText').value.trim();
+  if(!name||!text||currentRating===0){alert('Veuillez remplir tous les champs et donner une note !');return;}
+  const avis=JSON.parse(localStorage.getItem('kole_avis')||'[]');
+  avis.unshift({name,text,stars:currentRating,date:new Date().toLocaleDateString('fr')});
+  localStorage.setItem('kole_avis',JSON.stringify(avis.slice(0,20)));
+  document.getElementById('avisSuccess').style.display='block';
+  document.getElementById('avisName').value='';
+  document.getElementById('avisText').value='';
+  setRating(0);
+  renderUserAvis();
+  setTimeout(()=>document.getElementById('avisSuccess').style.display='none',3000);
+}
+function renderUserAvis(){
+  const grid=document.getElementById('userAvisGrid');
+  if(!grid) return;
+  const avis=JSON.parse(localStorage.getItem('kole_avis')||'[]');
+  grid.innerHTML=avis.map(a=>`
+    <div class="testimonial-card reveal" style="margin-bottom:10px">
+      <div class="testimonial-stars">${'★'.repeat(a.stars)}${'☆'.repeat(5-a.stars)}</div>
+      <p class="testimonial-text">« ${a.text} »</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">${a.name[0].toUpperCase()}</div>
+        <div><div class="testimonial-name">${a.name}</div><div class="testimonial-date">${a.date}</div></div>
+      </div>
+    </div>`).join('');
+}
+
+// ════════════════════════════════════════════
+// ── CART SHAKE ANIMATION ──
+// ════════════════════════════════════════════
+function shakeCart(){
+  const btn=document.querySelector('.cart-btn');
+  if(!btn) return;
+  btn.classList.remove('shake');
+  void btn.offsetWidth;
+  btn.classList.add('shake');
+  setTimeout(()=>btn.classList.remove('shake'),500);
+}
 
 // ── RENDER MENU ──
 function renderMenu(){
-  const snacksEl = document.getElementById('snacks-grid');
-  const specialsEl = document.getElementById('specials-grid');
-  MENU.snacks.forEach((item,i)=>{ snacksEl.innerHTML += cardHTML(item, i*0.05); });
-  MENU.specials.forEach((item,i)=>{ specialsEl.innerHTML += cardHTML(item, i*0.05); });
+  const cats = {
+    snacks: {grid:'snacks-grid', count:'snacks-count'},
+    specials: {grid:'specials-grid', count:'specials-count'},
+  };
+  for(const [cat, cfg] of Object.entries(cats)){
+    const items = MENU[cat];
+    const el = document.getElementById(cfg.grid);
+    const cntEl = document.getElementById(cfg.count);
+    if(cntEl) cntEl.textContent = items.length;
+    el.innerHTML = '';
+    items.forEach((item,i) => {
+      const div = document.createElement('div');
+      div.className='item-card';
+      div.style.animationDelay = (i*0.07)+'s';
+      div.dataset.id = item.id;
+      div.dataset.name = item.name.toLowerCase();
+      div.dataset.price = item.price;
+      div.innerHTML = cardHTML(item);
+      el.appendChild(div);
+    });
+  }
+  // Filter unavailable
+  setTimeout(()=>{
+    unavailableItems.forEach(id=>{
+      const card=document.querySelector(`.item-card[data-id="${id}"]`);
+      if(card){card.style.opacity='.45';card.querySelector('.add-btn').disabled=true;card.querySelector('.add-btn').textContent='✕';}
+    });
+    addMetaBars();
+    renderUserAvis();
+    applyLang();
+  },50);
+  // Gallery emoji grid
+  const gal = document.getElementById('galleryGrid');
+  if(gal){
+    const allIt = allItems();
+    allIt.forEach(item => {
+      gal.innerHTML += `<div class="gallery-item reveal" style="display:flex;align-items:center;justify-content:center;font-size:60px;background:linear-gradient(135deg,var(--cream2),var(--cream3));cursor:default">
+        <span>${item.emoji}</span>
+        <div class="gallery-item-overlay" style="flex-direction:column;gap:4px">
+          <span style="font-size:14px;font-weight:800;color:#fff">${item.name}</span>
+          <span style="font-size:12px;color:var(--gold-light)">${item.price.toLocaleString()} FCFA</span>
+        </div>
+      </div>`;
+    });
+  }
 }
 
-function cardHTML(item, delay){
-  const priceLabel = item.priceDisplay ? item.priceDisplay + ' FCFA' : item.price + ' FCFA';
+function cardHTML(item){
+  const tagsHTML = item.tags ? item.tags.map(t=>`<span class="item-tag">${t}</span>`).join('') : '';
+  const badgeHTML = item.badge
+    ? `<div class="${item.badge==='pop'?'item-pop-badge':'item-new-badge'}">${item.badge==='pop'?'🔥 Top':'✨ Nouveau'}</div>`
+    : '';
+  const isFav = favorites.includes(item.id);
   return `
-  <div class="item-card" style="animation-delay:${delay}s">
-    <div class="item-emoji">${item.emoji}</div>
+  <div class="item-img" style="display:flex;align-items:center;justify-content:center;font-size:58px;background:linear-gradient(135deg,var(--cream2),var(--cream3));position:relative">
+    <span style="line-height:1">${item.emoji || '🍽️'}</span>
+    ${badgeHTML}
+    <button class="fav-btn ${isFav?'active':''}" onclick="toggleFav('${item.id}',this,event)" title="Favori">${isFav?'❤️':'🤍'}</button>
+  </div>
+  <div class="item-body">
     <div class="item-name">${item.name}</div>
-    ${item.note ? `<div class="item-note">${item.note}</div>` : ''}
+    <div class="item-tags">${tagsHTML}</div>
     <div class="item-bottom">
-      <span class="item-price">${priceLabel}</span>
-      <button class="add-btn" onclick="addToCart('${item.id}')" title="Ajouter">+</button>
+      <div class="item-price">${item.price.toLocaleString()} FCFA</div>
+      <button class="add-btn" onclick="addToCart('${item.id}')" title="Ajouter au panier">+</button>
     </div>
   </div>`;
 }
 
-function findItem(id){
-  return [...MENU.snacks,...MENU.specials].find(i=>i.id===id);
+// ── SEARCH ──
+let searchOpen = false;
+function toggleSearch(){
+  searchOpen = !searchOpen;
+  document.getElementById('searchOverlay').classList.toggle('open', searchOpen);
+  if(searchOpen){
+    setTimeout(()=>document.getElementById('searchInput').focus(), 350);
+  } else {
+    document.getElementById('searchInput').value = '';
+    filterMenu('');
+  }
+}
+function filterMenu(q){
+  const query = q.toLowerCase().trim();
+  const cards = document.querySelectorAll('.item-card');
+  let visible = 0;
+  cards.forEach(card => {
+    const name = card.dataset.name || '';
+    const match = !query || name.includes(query);
+    card.style.display = match ? '' : 'none';
+    if(match) visible++;
+  });
+  document.getElementById('noResults').classList.toggle('show', visible===0 && query!=='');
+  // Show/hide sections
+  ['snacks','specials'].forEach(cat => {
+    const section = document.getElementById(cat+'-section');
+    const grid = document.getElementById(cat+'-grid');
+    if(section && grid){
+      const visItems = [...grid.querySelectorAll('.item-card')].some(c=>c.style.display!=='none');
+      section.style.display = visItems ? '' : 'none';
+    }
+  });
+}
+
+// ── CATEGORY SCROLL ──
+function scrollToSection(id, btn){
+  document.getElementById(id).scrollIntoView({behavior:'smooth', block:'start'});
+  document.querySelectorAll('.cat-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
 }
 
 // ── CART LOGIC ──
 function addToCart(id){
   const item = findItem(id);
   if(!item) return;
-  if(cart[id]){ cart[id].qty++; }
-  else { cart[id] = {item, qty:1}; }
+  if(cart[id]) cart[id].qty++;
+  else cart[id] = {item, qty:1};
   updateCart();
   bumpCount();
+  showToast(item);
+  trackClick(item.id);
+  playAddSound();
+  renderUpsell();
+  updateFreeDelivery();
 }
-
 function removeFromCart(id){
   if(!cart[id]) return;
   cart[id].qty--;
   if(cart[id].qty <= 0) delete cart[id];
   updateCart();
+  renderUpsell();
+  updateFreeDelivery();
 }
-
-function clearCart(){
-  cart = {};
-  updateCart();
-}
+function clearCart(){ cart={}; updateCart(); renderUpsell(); updateFreeDelivery(); }
+function getTotal(){ return Object.values(cart).reduce((s,e)=>s+e.item.price*e.qty,0); }
 
 function bumpCount(){
-  const el = document.getElementById('cartCount');
-  el.classList.remove('bump');
-  void el.offsetWidth;
-  el.classList.add('bump');
-  setTimeout(()=>el.classList.remove('bump'),300);
-}
-
-function getTotal(){
-  return Object.values(cart).reduce((s,e)=>s+e.item.price*e.qty,0);
+  ['cartCount','cartCountMobile'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    el.classList.remove('bump');
+    void el.offsetWidth;
+    el.classList.add('bump');
+    setTimeout(()=>el.classList.remove('bump'),500);
+  });
 }
 
 function updateCart(){
   const keys = Object.keys(cart);
-  const countEl = document.getElementById('cartCount');
   const totalCount = Object.values(cart).reduce((s,e)=>s+e.qty,0);
-  countEl.textContent = totalCount;
+  document.querySelectorAll('#cartCount,#cartCountMobile').forEach(el=>el.textContent=totalCount);
 
   const bodyEl = document.getElementById('cartBody');
   const footerEl = document.getElementById('cartFooter');
+  const fab = document.getElementById('mobileCartFab');
 
-  if(keys.length === 0){
-    bodyEl.innerHTML = `<div class="cart-empty"><div class="cart-empty-icon">🛍️</div><p>Votre panier est vide.<br/>Ajoutez des articles !</p></div>`;
-    footerEl.style.display = 'none';
+  if(keys.length===0){
+    bodyEl.innerHTML = `<div class="cart-empty"><div class="cart-empty-icon">🛍️</div><p>Votre panier est vide.<br/>Ajoutez vos délices !</p></div>`;
+    footerEl.style.display='none';
+    if(fab) fab.style.display='none';
     return;
   }
 
-  let html = '<div class="cart-items">';
-  keys.forEach(id => {
-    const {item,qty} = cart[id];
-    const sub = item.price * qty;
-    html += `
+  let html='<div class="cart-items">';
+  keys.forEach(id=>{
+    const {item,qty}=cart[id];
+    const sub=item.price*qty;
+    html+=`
     <div class="cart-line">
-      <span class="cart-line-emoji">${item.emoji}</span>
-      <div style="flex:1">
+      <div class="cart-line-thumb">
+        <span style="font-size:28px;display:flex;align-items:center;justify-content:center;width:100%;height:100%">${item.emoji||'🍽️'}</span>
+        <div class="cart-line-thumb-fallback" style="display:none">🍽️</div>
+      </div>
+      <div style="flex:1;min-width:0">
         <div class="cart-line-name">${item.name}</div>
-        ${item.note?`<div class="cart-line-note">${item.note}</div>`:''}
+        
       </div>
       <div class="cart-line-controls">
         <button class="qty-btn" onclick="removeFromCart('${id}')">−</button>
@@ -823,164 +2499,315 @@ function updateCart(){
       <span class="cart-line-price">${sub.toLocaleString()} F</span>
     </div>`;
   });
-  html += '</div>';
-  bodyEl.innerHTML = html;
-  footerEl.style.display = 'block';
-  document.getElementById('cartTotal').textContent = getTotal().toLocaleString() + ' FCFA';
+  html+='</div>';
+  bodyEl.innerHTML=html;
+  footerEl.style.display='block';
+  const total=getTotal();
+  document.getElementById('cartTotal').textContent=total.toLocaleString()+' FCFA';
+  document.getElementById('cartSubtotal').textContent=total.toLocaleString()+' FCFA';
+  checkMinOrder();
+  if(fab){ fab.style.display='flex'; document.getElementById('cartCountMobile').textContent=totalCount; }
+}
+
+// ── TOAST ──
+function showToast(item){
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className='toast';
+  toast.innerHTML=`
+    <span style="font-size:28px;display:flex;align-items:center;justify-content:center;width:36px;height:36px;background:var(--cream2);border-radius:8px;flex-shrink:0">${item.emoji||'🍽️'}</span>
+    <span>✅ <strong>${item.name}</strong> ajouté !</span>`;
+  container.appendChild(toast);
+  setTimeout(()=>{
+    toast.classList.add('out');
+    setTimeout(()=>toast.remove(),300);
+  }, 2500);
 }
 
 // ── MODAL ──
+function setMode(mode){
+  document.getElementById('deliveryMode').value=mode;
+  document.getElementById('modeRetrait').classList.toggle('active',mode==='retrait');
+  document.getElementById('modeLivraison').classList.toggle('active',mode==='livraison');
+  document.getElementById('addressGroup').style.display=mode==='livraison'?'block':'none';
+  if(document.getElementById('modalOverlay').classList.contains('open')) renderOrderSummary();
+}
+
 function openModal(){
   if(Object.keys(cart).length===0) return;
   renderOrderSummary();
-  // Reset form
-  document.getElementById('clientName').value = '';
-  document.getElementById('clientPhone').value = '';
-  document.getElementById('clientNote').value = '';
-  document.getElementById('clientAddress').value = '';
-  document.getElementById('deliveryMode').value = 'retrait';
-  document.getElementById('addressGroup').style.display = 'none';
+  document.getElementById('clientName').value='';
+  document.getElementById('clientPhone').value='';
+  document.getElementById('clientNote').value='';
+  document.getElementById('clientAddress').value='';
+  setMode('retrait');
   clearErrors();
   document.getElementById('modalOverlay').classList.add('open');
-  document.getElementById('modalForm').style.display = 'block';
+  document.getElementById('modalForm').style.display='block';
   document.getElementById('successScreen').classList.remove('show');
+  document.body.style.overflow='hidden';
 }
-
 function closeModal(){
   document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow='';
 }
-
 function closeModalOutside(e){
-  if(e.target === document.getElementById('modalOverlay')) closeModal();
+  if(e.target===document.getElementById('modalOverlay')) closeModal();
 }
-
 function openCart(){
   if(Object.keys(cart).length>0) openModal();
-  else {
-    document.querySelector('.cart-col').scrollIntoView({behavior:'smooth'});
-  }
-}
-
-function toggleAddress(){
-  const mode = document.getElementById('deliveryMode').value;
-  document.getElementById('addressGroup').style.display = mode==='livraison' ? 'block' : 'none';
+  else document.getElementById('menu').scrollIntoView({behavior:'smooth'});
 }
 
 function renderOrderSummary(){
-  let html = '<h4>🧾 Récapitulatif</h4>';
-  Object.values(cart).forEach(({item,qty}) => {
-    html += `<div class="summary-item">
-      <span>${item.emoji} ${item.name}${item.note?' ('+item.note+')':''} × ${qty}</span>
-      <span>${(item.price*qty).toLocaleString()} F</span>
+  let html='<h4>🧾 Récapitulatif</h4>';
+  Object.values(cart).forEach(({item,qty})=>{
+    html+=`<div class="summary-item">
+      <span style="display:flex;align-items:center;gap:6px">
+        <span style="font-size:18px;width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;background:var(--cream2);border-radius:6px;margin-right:6px">${item.emoji||'🍽️'}</span>
+        ${item.name} × ${qty}
+      </span>
+      <span style="font-weight:700;color:var(--red)">${(item.price*qty).toLocaleString()} F</span>
     </div>`;
   });
-  html += `<div class="summary-total"><span>Total</span><span>${getTotal().toLocaleString()} FCFA</span></div>`;
-  document.getElementById('orderSummary').innerHTML = html;
+  const mode=document.getElementById('deliveryMode').value;
+  const fee=mode==='livraison'?DELIVERY_FEE:0;
+  if(fee>0) html+=`<div class="summary-item"><span>🚚 Livraison</span><span style="font-weight:700;color:var(--orange)">${fee.toLocaleString()} F</span></div>`;
+  html+=`<div class="summary-total"><span>Total</span><span>${(getTotal()+fee).toLocaleString()} FCFA</span></div>`;
+  document.getElementById('orderSummary').innerHTML=html;
 }
 
 // ── VALIDATION ──
 function clearErrors(){
   ['clientName','clientPhone','clientAddress'].forEach(id=>{
-    document.getElementById(id).classList.remove('error');
+    const el=document.getElementById(id);
+    if(el) el.classList.remove('error');
   });
   ['nameError','phoneError','addressError'].forEach(id=>{
-    document.getElementById(id).classList.remove('show');
+    const el=document.getElementById(id);
+    if(el) el.classList.remove('show');
   });
 }
-
 function validatePhone(phone){
-  // Accepte formats sénégalais : 7X XXX XX XX (avec ou sans espaces/tirets)
-  const cleaned = phone.replace(/[\s\-]/g,'');
+  const cleaned=phone.replace(/[\s\-\(\)]/g,'');
   return /^(221)?[7][0-9]{8}$/.test(cleaned);
 }
 
-// ── BUILD WHATSAPP MESSAGE ──
-function buildWhatsAppMessage(name, phone, mode, address, note, ref){
-  let msg = '';
-  msg += `🛍️ *NOUVELLE COMMANDE - Chez Kolé*\n`;
-  msg += `🔖 Réf : *${ref}*\n\n`;
-  msg += `👤 *Client :* ${name}\n`;
-  msg += `📱 *Téléphone :* ${phone}\n`;
-  msg += `🚚 *Mode :* ${mode === 'livraison' ? 'Livraison' : 'Retrait sur place'}\n`;
-  if(mode === 'livraison' && address){
-    msg += `📍 *Adresse :* ${address}\n`;
-  }
-  msg += `\n🧾 *Articles commandés :*\n`;
+// ── BUILD WHATSAPP MSG ──
+function buildWhatsAppMessage(name,phone,mode,address,note,ref){
+  let msg=`🛍️ *NOUVELLE COMMANDE – Chez Kolé*\n`;
+  msg+=`🔖 Réf : *${ref}*\n\n`;
+  msg+=`👤 *Client :* ${name}\n`;
+  msg+=`📱 *Téléphone :* ${phone}\n`;
+  msg+=`🚚 *Mode :* ${mode==='livraison'?'Livraison à domicile':'Retrait sur place'}\n`;
+  if(mode==='livraison'&&address) msg+=`📍 *Adresse :* ${address}\n`;
+  msg+=`\n🧾 *Articles commandés :*\n`;
   Object.values(cart).forEach(({item,qty})=>{
-    const sub = item.price * qty;
-    msg += `  • ${item.emoji} ${item.name}`;
-    if(item.note) msg += ` (${item.note})`;
-    msg += ` × ${qty} = ${sub.toLocaleString()} FCFA\n`;
+    const sub=item.price*qty;
+    msg+=`  • ${item.name} × ${qty} = ${sub.toLocaleString()} FCFA\n`;
   });
-  msg += `\n💰 *TOTAL : ${getTotal().toLocaleString()} FCFA*\n`;
-  if(note){
-    msg += `\n📝 *Note :* ${note}\n`;
-  }
-  msg += `\n_Commande passée via le site Chez Kolé_`;
+  if(mode==='livraison') msg+=`💸 *Livraison : ${DELIVERY_FEE.toLocaleString()} FCFA*\n`;
+  const grandTotal = getTotal() + (mode==='livraison'?DELIVERY_FEE:0);
+  msg+=`\n💰 *TOTAL : ${grandTotal.toLocaleString()} FCFA*\n`;
+  if(note) msg+=`\n📝 *Note :* ${note}\n`;
+  msg+=`\n_Commande passée via le site Chez Kolé_`;
   return msg;
 }
 
-// ── CONFIRM ORDER → WHATSAPP ──
+// ── CONFIRM ORDER ──
 function confirmOrder(){
   clearErrors();
-  const name    = document.getElementById('clientName').value.trim();
-  const phone   = document.getElementById('clientPhone').value.trim();
-  const mode    = document.getElementById('deliveryMode').value;
-  const address = document.getElementById('clientAddress').value.trim();
-  const note    = document.getElementById('clientNote').value.trim();
-
-  let valid = true;
-
+  const name=document.getElementById('clientName').value.trim();
+  const phone=document.getElementById('clientPhone').value.trim();
+  const mode=document.getElementById('deliveryMode').value;
+  const address=document.getElementById('clientAddress').value.trim();
+  const note=document.getElementById('clientNote').value.trim();
+  let valid=true;
   if(!name){
     document.getElementById('clientName').classList.add('error');
     document.getElementById('nameError').classList.add('show');
-    valid = false;
+    valid=false;
   }
-  if(!phone || !validatePhone(phone)){
+  if(!phone||!validatePhone(phone)){
     document.getElementById('clientPhone').classList.add('error');
     document.getElementById('phoneError').classList.add('show');
-    valid = false;
+    valid=false;
   }
-  if(mode === 'livraison' && !address){
+  if(mode==='livraison'&&!address){
     document.getElementById('clientAddress').classList.add('error');
     document.getElementById('addressError').classList.add('show');
-    valid = false;
+    valid=false;
   }
-
   if(!valid) return;
-
-  // Générer référence commande
-  const ref = 'CK-' + Date.now().toString().slice(-6);
-
-  // Construire le message WhatsApp
-  const message = buildWhatsAppMessage(name, phone, mode, address, note, ref);
-  const encodedMsg = encodeURIComponent(message);
-  const waUrl = `https://wa.me/${OWNER_PHONE}?text=${encodedMsg}`;
-
-  // Sauvegarder l'URL en cas de fallback
-  pendingWhatsAppUrl = waUrl;
-  document.getElementById('whatsappFallback').href = waUrl;
-
-  // Afficher l'écran succès
-  document.getElementById('successRef').textContent = ref;
-  document.getElementById('modalForm').style.display = 'none';
+  const ref='CK-'+Date.now().toString().slice(-6);
+  const message=buildWhatsAppMessage(name,phone,mode,address,note,ref);
+  const encodedMsg=encodeURIComponent(message);
+  const waUrl=`https://wa.me/${OWNER_PHONE}?text=${encodedMsg}`;
+  window.pendingWhatsAppUrl=waUrl;
+  document.getElementById('whatsappFallback').href=waUrl;
+  document.getElementById('successRef').textContent=ref;
+  document.getElementById('modalForm').style.display='none';
   document.getElementById('successScreen').classList.add('show');
-
-  // Vider le panier
-  cart = {};
+  saveToHistory(ref, {...cart}, getTotal()+(mode==='livraison'?DELIVERY_FEE:0), mode);
+  stats.orders++;
+  localStorage.setItem('kole_stats',JSON.stringify(stats));
+  cart={};
   updateCart();
-
-  // Ouvrir WhatsApp automatiquement
-  window.open(waUrl, '_blank');
+  renderUpsell();
+  updateFreeDelivery();
+  window.open(waUrl,'_blank');
 }
+
+// ── SCROLL REVEAL ──
+const revealObserver = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('visible');
+      revealObserver.unobserve(e.target);
+    }
+  });
+},{threshold:0.1, rootMargin:'0px 0px -40px 0px'});
+
+function initReveal(){
+  document.querySelectorAll('.reveal,.reveal-left,.reveal-right').forEach(el=>{
+    revealObserver.observe(el);
+  });
+}
+
+// ── NAVBAR SCROLL ──
+window.addEventListener('scroll',()=>{
+  const nav=document.getElementById('mainNav');
+  const backTop=document.getElementById('backTop');
+  if(window.scrollY>60){
+    nav.classList.add('scrolled');
+    backTop.classList.add('show');
+  } else {
+    nav.classList.remove('scrolled');
+    backTop.classList.remove('show');
+  }
+});
+
+// ── CATEGORY TAB ACTIVE ON SCROLL ──
+window.addEventListener('scroll',()=>{
+  const sections=['snacks-section','specials-section'];
+  const tabs=document.querySelectorAll('.cat-tab');
+  let current=0;
+  sections.forEach((id,i)=>{
+    const el=document.getElementById(id);
+    if(el && window.scrollY >= el.offsetTop - 180) current=i;
+  });
+  tabs.forEach((t,i)=>t.classList.toggle('active',i===current));
+},{passive:true});
+
+// ── LOADING SCREEN ──
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    document.getElementById('loadingScreen').classList.add('hidden');
+    setTimeout(initReveal, 100);
+    setTimeout(animateCounters, 200);
+    updateHoursStatus();
+  }, 1500);
+});
 
 // ── INIT ──
 renderMenu();
+setTimeout(initReveal, 100);
+updateFavFilterBar();
 </script>
-  <div style="background:var(--dark); text-align:center; padding:20px 0; border-top:1px solid rgba(212,160,23,0.2);">
-  <p style="font-size:10px; color:rgba(255,255,255,0.3); letter-spacing:2px; text-transform:uppercase; margin:0; font-family:sans-serif;">
-    Designed by <span style="color:var(--gold); font-weight:800;">Shelby Design</span>
-  </p>
+
+
+<!-- PROMO POPUP -->
+<div class="promo-popup" id="promoPopup">
+  <div class="promo-popup-bg" onclick="closePromoPopup()"></div>
+  <div class="promo-popup-box">
+    <div class="promo-popup-icon">🎁</div>
+    <div class="promo-popup-title">Bienvenue chez Kolé !</div>
+    <div class="promo-popup-sub">Première commande ? Mentionnez ce code dans votre note pour recevoir un plat offert !</div>
+    <div class="promo-code" onclick="copyPromoCode(this)" title="Cliquer pour copier">KOLE1ER</div>
+    <button class="promo-popup-close" onclick="closePromoPopup()">🛍️ Commander maintenant</button>
+    <button class="promo-popup-skip" onclick="closePromoPopup()">Non merci, continuer sans</button>
   </div>
+</div>
+
+<!-- HISTORIQUE COMMANDES -->
+<div class="historique-overlay" id="historiqueOverlay" onclick="if(event.target===this)closeHistorique()">
+  <div class="historique-box">
+    <div class="hist-head">
+      <h3>📋 Mes Commandes</h3>
+      <button class="modal-close" onclick="closeHistorique()" aria-label="Fermer">✕</button>
+    </div>
+    <div class="hist-body" id="histBody"></div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="admin-overlay" id="adminOverlay" onclick="if(event.target===this)closeAdmin()">
+  <div class="admin-box">
+    <div class="admin-head">
+      <h3>⚙️ Panneau Admin</h3>
+      <button class="modal-close" style="background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);color:rgba(255,255,255,.8)" onclick="closeAdmin()">✕</button>
+    </div>
+    <div class="admin-body" id="adminBody">
+      <div class="admin-pwd-form" id="adminLogin">
+        <p>🔐 Accès réservé au propriétaire</p>
+        <input class="admin-pwd-input" type="password" id="adminPwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkAdminPwd()"/>
+        <button class="admin-login-btn" onclick="checkAdminPwd()">Connexion</button>
+        <span class="admin-pwd-error" id="adminPwdError"></span>
+      </div>
+      <div id="adminContent" style="display:none">
+        <div class="admin-section">
+          <h4>📊 Statistiques du jour</h4>
+          <div class="admin-stat-grid" id="adminStats"></div>
+        </div>
+        <div class="admin-section">
+          <h4>🍽️ Disponibilité des plats</h4>
+          <div id="adminItems"></div>
+        </div>
+        <div class="admin-section" style="text-align:center">
+          <button onclick="resetStats()" style="background:rgba(192,57,43,.2);border:1px solid var(--red);color:var(--red);border-radius:8px;padding:8px 18px;font-size:12px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif">🗑️ Réinitialiser les stats</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CHATBOT FAB -->
+<button class="chat-fab" id="chatFab" onclick="toggleChat()">
+  <span class="chat-fab-dot"></span>
+  🤖 Assistant IA
+</button>
+
+<!-- CHATBOT PANEL -->
+<div class="chat-panel" id="chatPanel">
+  <div class="chat-head">
+    <div class="chat-head-avatar">🤖</div>
+    <div class="chat-head-info">
+      <div class="chat-head-name">Assistant Chez Kolé</div>
+      <div class="chat-head-status">En ligne · Répond instantanément</div>
+    </div>
+    <button class="chat-close-btn" onclick="toggleChat()">✕</button>
+  </div>
+  <div class="chat-messages" id="chatMessages">
+    <div class="chat-msg bot">
+      <div class="chat-bubble">👋 Bonjour ! Je suis l'assistant de <strong>Chez Kolé</strong>.<br/>Je peux vous aider sur les plats, prix, horaires et livraisons. Que souhaitez-vous savoir ?</div>
+      <div class="chat-msg-time">maintenant</div>
+    </div>
+  </div>
+  <div class="chat-msg chat-typing" id="chatTyping">
+    <div class="chat-bubble"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>
+  </div>
+  <div class="chat-quick-btns" id="chatQuickBtns">
+    <button class="chat-quick-btn" onclick="sendQuick('Quels sont vos plats ?')">🍽️ Les plats</button>
+    <button class="chat-quick-btn" onclick="sendQuick('Quels sont vos horaires ?')">🕐 Horaires</button>
+    <button class="chat-quick-btn" onclick="sendQuick('Combien coûte la livraison ?')">🚚 Livraison</button>
+    <button class="chat-quick-btn" onclick="sendQuick('Comment commander ?')">📱 Commander</button>
+  </div>
+  <div class="chat-input-area">
+    <input class="chat-input" id="chatInput" placeholder="Posez votre question..." 
+      onkeydown="if(event.key==='Enter')sendMessage()"/>
+    <button class="chat-send-btn" id="chatSendBtn" onclick="sendMessage()">➤</button>
+  </div>
+</div>
+
 </body>
 </html>
