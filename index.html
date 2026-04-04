@@ -976,11 +976,46 @@ function confirmOrder(){
 
 // ── INIT ──
 renderMenu();
+  function toggleChat() {
+    const w = document.getElementById('chat-window');
+    w.style.display = (w.style.display === 'none' || w.style.display === '') ? 'flex' : 'none';
+}
+
+function sendMessage() {
+    const input = document.getElementById('user-input');
+    const msgBox = document.getElementById('chat-messages');
+    if (!input.value.trim()) return;
+
+    msgBox.innerHTML += `<div style="background:var(--warm); color:white; padding:8px; border-radius:10px; margin-bottom:10px; align-self:flex-end; margin-left:20px;">${input.value}</div>`;
+    
+    const text = input.value;
+    input.value = "";
+
+    setTimeout(() => {
+        msgBox.innerHTML += `<div style="background:white; padding:8px; border-radius:10px; margin-bottom:10px; border-left:3px solid var(--gold);">Je suis l'assistant Chez Kolé. Je peux vous conseiller nos Fatayas ou nos Tacos ! 🥟</div>`;
+        msgBox.scrollTop = msgBox.scrollHeight;
+    }, 1000);
+}
+
 </script>
   <div style="background:var(--dark); text-align:center; padding:20px 0; border-top:1px solid rgba(212,160,23,0.2);">
   <p style="font-size:10px; color:rgba(255,255,255,0.3); letter-spacing:2px; text-transform:uppercase; margin:0; font-family:sans-serif;">
     Designed by <span style="color:var(--gold); font-weight:800;">Shelby Design</span>
   </p>
   </div>
+  <div id="ai-chat" style="position:fixed; bottom:20px; right:20px; z-index:9999;">
+  <button onclick="toggleChat()" style="background:var(--gold); border:none; border-radius:50%; width:50px; height:50px; cursor:pointer; font-size:25px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">🤖</button>
+  <div id="chat-window" style="display:none; position:absolute; bottom:60px; right:0; width:280px; height:350px; background:white; border:2px solid var(--gold); border-radius:15px; flex-direction:column; overflow:hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.2); font-family:sans-serif;">
+    <div style="background:var(--warm); color:var(--gold-light); padding:10px; font-weight:bold;">Chez Kolé IA</div>
+    <div id="chat-messages" style="flex:1; padding:10px; overflow-y:auto; display:flex; flex-direction:column; background:#fff8ee; font-size:13px;">
+      <div style="background:white; padding:8px; border-radius:10px; margin-bottom:10px; border-left:3px solid var(--gold);">Bonjour ! Je suis l'assistant de Chez Kolé. Que puis-je faire pour vous ?</div>
+    </div>
+    <div style="padding:10px; border-top:1px solid #eee; display:flex; gap:5px;">
+      <input type="text" id="user-input" placeholder="Votre question..." style="flex:1; padding:5px; border:1px solid #ddd; border-radius:5px;">
+      <button onclick="sendMessage()" style="background:var(--gold); border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">ok</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
