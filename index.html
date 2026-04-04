@@ -976,27 +976,42 @@ function confirmOrder(){
 
 // ── INIT ──
 renderMenu();
-  function toggleChat() {
-    const w = document.getElementById('chat-window');
-    w.style.display = (w.style.display === 'none' || w.style.display === '') ? 'flex' : 'none';
+ function toggleChat() {
+  const w = document.getElementById('chat-window');
+  w.style.display = (w.style.display === 'none' || w.style.display === '') ? 'flex' : 'none';
 }
 
-function sendMessage() {
-    const input = document.getElementById('user-input');
-    const msgBox = document.getElementById('chat-messages');
-    if (!input.value.trim()) return;
+async function sendMessage() {
+  const input = document.getElementById('user-input');
+  const msgBox = document.getElementById('chat-messages');
+  const API_KEY = "AIzaSyBzrT09NgsUU9b68tz483YIyeK-soAcRZ8"; 
 
-    msgBox.innerHTML += `<div style="background:var(--warm); color:white; padding:8px; border-radius:10px; margin-bottom:10px; align-self:flex-end; margin-left:20px;">${input.value}</div>`;
-    
-    const text = input.value;
-    input.value = "";
+  if (!input.value.trim()) return;
 
-    setTimeout(() => {
-        msgBox.innerHTML += `<div style="background:white; padding:8px; border-radius:10px; margin-bottom:10px; border-left:3px solid var(--gold);">Je suis l'assistant Chez Kolé. Je peux vous conseiller nos Fatayas ou nos Tacos ! 🥟</div>`;
-        msgBox.scrollTop = msgBox.scrollHeight;
-    }, 1000);
+  const userText = input.value;
+  msgBox.innerHTML += `<div style="background:var(--warm); color:white; padding:8px; border-radius:10px; margin-bottom:10px; align-self:flex-end; font-size:13px;">${userText}</div>`;
+  input.value = "";
+  msgBox.scrollTop = msgBox.scrollHeight;
+
+  try {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: `Tu es l'assistant de Chez Kolé à Kédougou. Ton menu: Fataya (100F), Nems (150F), Rissoles (200F), Mini-pizzas (200F), Croque-monsieur (200F), Beignets (100F), Crêpes sucrées (500F), Crêpes salées (1000F), Croissants salés (1000F), Sandwich (1000F-1500F), Tacos (500F-600F). Réponds très amicalement en 2 phrases max. Question: ${userText}` }] }]
+      })
+    });
+
+    const data = await response.json();
+    const aiResponse = data.candidates[0].content.parts[0].text;
+
+    msgBox.innerHTML += `<div style="background:white; padding:8px; border-radius:10px; margin-bottom:10px; border-left:3px solid var(--gold); font-size:13px;">${aiResponse}</div>`;
+    msgBox.scrollTop = msgBox.scrollHeight;
+  } catch (e) {
+    msgBox.innerHTML += `<div style="font-size:10px; color:gray;">Désolé, réessayez dans un instant...</div>`;
+  }
 }
-
+  }
 </script>
   <div style="background:var(--dark); text-align:center; padding:20px 0; border-top:1px solid rgba(212,160,23,0.2);">
   <p style="font-size:10px; color:rgba(255,255,255,0.3); letter-spacing:2px; text-transform:uppercase; margin:0; font-family:sans-serif;">
